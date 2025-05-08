@@ -5,12 +5,13 @@ import "./App.css";
 import Header from "./Components/Header";
 import SignUp from "./Components/Signup";
 import Footer from "./Components/Footer";
+import LogIn from "./Components/Login";
 
 function App() {
   return (
     <>
       <Header />
-      <SignUp />
+      <LogIn />
       <Footer />
     </>
   );
