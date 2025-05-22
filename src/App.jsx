@@ -6,6 +6,7 @@ import Header from "./Components/Header";
 import SignUp from "./Components/Signup";
 import Footer from "./Components/Footer";
 import LogIn from "./Components/Login";
+import Saller from "./Components/Seller"
 
 function App() {
   return (
@@ -18,3 +19,4 @@ function App() {
 }
 
 export default App;
+

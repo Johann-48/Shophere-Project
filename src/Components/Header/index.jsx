@@ -1,6 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Importante para navegação
 
-// Head Component
 export default function Header() {
   return (
     <header className="w-full bg-white shadow-sm">
@@ -10,21 +10,26 @@ export default function Header() {
           <span className="text-green-600">SHOP</span>
           <span className="text-gray-800">HERE</span>
         </div>
+
         {/* Nav */}
         <nav className="space-x-6">
-          <a href="#" className="text-gray-600 hover:text-gray-900">
+          <Link to="/" className="text-gray-600 hover:text-gray-900">
             Página Inicial
-          </a>
-          <a href="#" className="text-gray-600 hover:text-gray-900">
+          </Link>
+          <Link to="/contato" className="text-gray-600 hover:text-gray-900">
             Contato
-          </a>
-          <a href="#" className="text-gray-600 hover:text-gray-900">
+          </Link>
+          <Link to="/sobre" className="text-gray-600 hover:text-gray-900">
             Sobre
-          </a>
-          <a href="#" className="text-gray-600 hover:text-gray-900 underline">
+          </Link>
+          <Link to="/signup-seller" className="text-gray-600 hover:text-gray-900">
+            Sign Up Seller
+          </Link>
+          <Link to="/signup" className="text-gray-600 hover:text-gray-900 underline">
             Sign Up
-          </a>
+          </Link>
         </nav>
+
         {/* Search */}
         <div className="relative">
           <input
