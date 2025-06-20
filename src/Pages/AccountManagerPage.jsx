@@ -1,14 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import LogIn from "../Components/Login";
+import AccountManager from "../Components/AccountManager/AccountManager";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
 
-export default function LoginPage() {
+export default function AccountManagerPage() {
   return (
     <>
       <Header />
-      <LogIn />
+      <AccountManager />
       <Footer />
     </>
   );
