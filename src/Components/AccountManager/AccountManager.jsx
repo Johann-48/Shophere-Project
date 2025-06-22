@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiUser,
   FiSettings,
@@ -8,15 +8,38 @@ import {
   FiChevronRight,
   FiX,
 } from "react-icons/fi";
+import axios from "axios";
 
 export default function AccountManager() {
+  const [user, setUser] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await axios.get("http://localhost:4000/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(res.data);
+      } catch (err) {
+        console.error("Erro ao buscar dados do usuário:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (!user) {
+    return <div className="p-8">Carregando perfil...</div>;
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
       <aside className="w-64 bg-white p-6">
         <div className="flex items-center gap-4 mb-8">
           <img
@@ -25,8 +48,8 @@ export default function AccountManager() {
             className="rounded-full w-12 h-12"
           />
           <div>
-            <h2 className="text-lg font-semibold">Seu Nome</h2>
-            <p className="text-sm text-gray-500">seunome@gmail.com</p>
+            <h2 className="text-lg font-semibold">{user.nome}</h2>
+            <p className="text-sm text-gray-500">{user.email}</p>
           </div>
         </div>
         <nav className="space-y-4">
@@ -61,15 +84,21 @@ export default function AccountManager() {
             <span className="flex items-center gap-2">
               <FiBell /> Notificação
             </span>
-            <span>{notifications ? "Allow" : "Block"}</span>
+            <span>{notifications ? "Ativado" : "Desativado"}</span>
           </button>
-          <button className="w-full flex items-center gap-2 py-2">
+          <button
+            className="w-full flex items-center gap-2 py-2"
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
+            }}
+          >
             <FiLogOut /> Sair
           </button>
         </nav>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 p-8">
         <div className="max-w-xl bg-white p-6 rounded-2xl">
           <div className="flex items-center gap-4 mb-6">
@@ -84,15 +113,10 @@ export default function AccountManager() {
               </span>
             </div>
             <div>
-              <h2 className="text-xl font-semibold">Seu Nome</h2>
-              <p className="text-sm text-gray-500">seunome@gmail.com</p>
+              <h2 className="text-xl font-semibold">{user.nome}</h2>
+              <p className="text-sm text-gray-500">{user.email}</p>
             </div>
-            <button
-              onClick={() => {
-                /* fechar ação */
-              }}
-              className="ml-auto text-xl"
-            >
+            <button className="ml-auto text-xl">
               <FiX />
             </button>
           </div>
@@ -102,7 +126,7 @@ export default function AccountManager() {
               <span>Nome</span>
               <input
                 type="text"
-                defaultValue="Seu Nome"
+                defaultValue={user.nome}
                 className="text-right w-2/3 focus:outline-none"
               />
             </div>
@@ -110,13 +134,17 @@ export default function AccountManager() {
               <span>Conta de Email</span>
               <input
                 type="email"
-                defaultValue="seuemail@gmail.com"
+                defaultValue={user.email}
                 className="text-right w-2/3 focus:outline-none"
               />
             </div>
             <div className="flex justify-between border-b pb-2">
-              <span>Numero De Celular</span>
-              <button className="text-red-500">Adicionar Numero</button>
+              <span>Numero De Telefone</span>
+              <input
+                type="text"
+                defaultValue={user.telefone || ""}
+                className="text-right w-2/3 focus:outline-none"
+              />
             </div>
             <div className="flex justify-between pb-2">
               <span>Localização</span>
@@ -132,7 +160,6 @@ export default function AccountManager() {
         </div>
       </main>
 
-      {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
           <div className="bg-white p-6 rounded-2xl w-80">
@@ -154,7 +181,7 @@ export default function AccountManager() {
                 </select>
               </div>
               <div className="flex justify-between items-center">
-                <span>Lingua</span>
+                <span>Língua</span>
                 <select className="focus:outline-none">
                   <option value="pt-br">PTBR</option>
                   <option value="en-us">ENUS</option>
