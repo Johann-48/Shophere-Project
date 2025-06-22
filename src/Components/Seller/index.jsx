@@ -1,84 +1,145 @@
 import React from 'react';
+import { FaUser, FaEnvelope, FaStore, FaLock } from 'react-icons/fa';
 
 const Main = () => {
-  return (
-    <main className="flex justify-center items-center py-12 bg-white min-h-screen">
-      <div className="w-full max-w-4xl p-8 bg-white shadow-md rounded-md">
-        <h2 className="text-red-600 text-lg font-semibold mb-6">Vendedor</h2>
+  const handleReset = () => {
+    document.getElementById("vendedorForm").reset();
+  };
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  return (
+    <main className="flex justify-center items-center min-h-screen bg-gradient-to-r from-green-100 to-white py-16 px-6">
+      <div className="w-full max-w-6xl bg-white shadow-2xl rounded-3xl p-10 border border-gray-200">
+        <h2 className="text-4xl font-bold text-red-600 mb-2">Cadastro de Vendedor</h2>
+        <p className="text-gray-600 mb-10 text-lg">
+          Complete os dados abaixo para criar sua conta como parceiro do ShopHere.
+        </p>
+
+        <form id="vendedorForm" className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Nome */}
-          <div>
-            <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Nome</label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              placeholder="Seu nome"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
+          <div className="flex flex-col">
+            <label htmlFor="nome" className="text-sm font-medium text-gray-700 mb-1">
+              Nome
+            </label>
+            <div className="relative">
+              <FaUser className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                placeholder="Digite seu nome"
+                required
+                title="Digite seu primeiro nome"
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+              />
+            </div>
           </div>
 
           {/* Sobrenome */}
-          <div>
-            <label htmlFor="sobrenome" className="block text-sm font-medium text-gray-700">Sobrenome</label>
+          <div className="flex flex-col">
+            <label htmlFor="sobrenome" className="text-sm font-medium text-gray-700 mb-1">
+              Sobrenome
+            </label>
             <input
               type="text"
               id="sobrenome"
               name="sobrenome"
-              placeholder="Seu sobrenome"
-              defaultValue="Rimel"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              placeholder="Digite seu sobrenome"
+              required
+              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
             />
           </div>
 
           {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              defaultValue="shophere111@gmail.com"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
+          <div className="flex flex-col">
+            <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <div className="relative">
+              <FaEnvelope className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="email@exemplo.com"
+                required
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+              />
+            </div>
           </div>
 
-          {/* Endereço do Comércio */}
-          <div>
-            <label htmlFor="endereco" className="block text-sm font-medium text-gray-700">Endereço do Comércio</label>
-            <input
-              type="text"
-              id="endereco"
-              name="endereco"
-              defaultValue="Walter Borges 8653"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
+          {/* Endereço */}
+          <div className="flex flex-col">
+            <label htmlFor="endereco" className="text-sm font-medium text-gray-700 mb-1">
+              Endereço do Comércio
+            </label>
+            <div className="relative">
+              <FaStore className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                id="endereco"
+                name="endereco"
+                placeholder="Rua, Número, Bairro"
+                required
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+              />
+            </div>
           </div>
 
-          {/* Criar Senha */}
+          {/* Senha */}
+          <div className="flex flex-col md:col-span-1">
+            <label htmlFor="senha" className="text-sm font-medium text-gray-700 mb-1">
+              Criar Senha
+            </label>
+            <div className="relative">
+              <FaLock className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="password"
+                id="senha"
+                name="senha"
+                placeholder="Digite uma senha"
+                required
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+              />
+            </div>
+          </div>
+
+          {/* Confirmar Senha */}
+          <div className="flex flex-col md:col-span-1">
+            <label htmlFor="confirmarSenha" className="text-sm font-medium text-gray-700 mb-1">
+              Confirmar Senha
+            </label>
+            <div className="relative">
+              <FaLock className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="password"
+                name="confirmarSenha"
+                placeholder="Confirme a senha"
+                required
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+              />
+            </div>
+          </div>
+
+          {/* Divider */}
           <div className="md:col-span-2">
-            <label htmlFor="senha" className="block text-sm font-medium text-gray-700">Criar Senha</label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              placeholder="Criar Senha"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 mb-4"
-            />
-
-            <input
-              type="password"
-              name="confirmarSenha"
-              placeholder="Confirmar Senha"
-              className="block w-full border border-gray-300 rounded-md p-2"
-            />
+            <hr className="my-6 border-gray-300" />
           </div>
 
           {/* Botões */}
-          <div className="md:col-span-2 flex justify-between mt-6">
-            <button type="button" className="text-gray-600">Cancelar</button>
-            <button type="submit" className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">Criar Senha</button>
+          <div className="md:col-span-2 flex justify-between">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-gray-600 hover:text-gray-900 transition font-medium"
+            >
+              Limpar Campos
+            </button>
+            <button
+              type="submit"
+              className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold shadow transition"
+            >
+              Criar Conta de Vendedor
+            </button>
           </div>
         </form>
       </div>
