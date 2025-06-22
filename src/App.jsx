@@ -16,12 +16,40 @@ import LogIn from "./Components/Login";
 import Saller from "./Components/Seller";
 
 function App() {
+  // Estado que controla o produto selecionado
+  const [selectedProductId, setSelectedProductId] = useState(null);
+
+  // Exemplo: lista de IDs disponíveis ou botões para selecionar
+  const productList = [
+    { id: 1, title: "Produto 1" },
+    { id: 2, title: "Produto 2" },
+    { id: 3, title: "Produto 3" },
+  ];
+
   return (
-    <>
+    <div>
       <Header />
-      <ProductPage />
+      <h1 className="text-2xl font-bold p-4">Loja Exemplo</h1>
+      {!selectedProductId ? (
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {productList.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setSelectedProductId(p.id)}
+              className="border p-4 rounded hover:shadow cursor-pointer"
+            >
+              {p.title}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <ProductPage
+          productId={selectedProductId}
+          onBack={() => setSelectedProductId(null)}
+        />
+      )}
       <Footer />
-    </>
+    </div>
   );
 }
 
