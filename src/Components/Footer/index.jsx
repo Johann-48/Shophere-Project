@@ -24,8 +24,8 @@ export default function Footer() {
           <h4 className="text-white font-semibold mb-3">Ajuda</h4>
           <ul className="space-y-2">
             <li>111 Bijoy sarani, Dhaka, DH 1515, Bangladesh</li>
-            <li>shophere@email.com</li>
-            <li>+88015-88888-9999</li>
+            <li>shopherecompany1@gmail.com</li>
+            <li>19993588498</li>
           </ul>
         </div>
         {/* Conta */}
