@@ -3,11 +3,9 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
-
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import ProductPage from "./Components/ProductPage/ProductPage";
-
 
 import AccountManager from "./Components/AccountManager/AccountManager";
 import LoginPage from "./Pages/LoginPage.jsx";
@@ -15,7 +13,6 @@ import SignUp from "./Components/Signup";
 import LogIn from "./Components/Login";
 import Saller from "./Components/Seller";
 import Login from "./Components/Login";
-
 
 function App() {
   // Estado que controla o produto selecionado
@@ -31,7 +28,6 @@ function App() {
   return (
     <div>
       <Header />
-<<<<<<< HEAD
       <h1 className="text-2xl font-bold p-4">Loja Exemplo</h1>
       {!selectedProductId ? (
         <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -51,9 +47,6 @@ function App() {
           onBack={() => setSelectedProductId(null)}
         />
       )}
-=======
-      <Login/>
->>>>>>> a2fd9139fc00f136ec490d77d5844b9ca8e9264a
       <Footer />
     </div>
   );
