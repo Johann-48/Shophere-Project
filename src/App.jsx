@@ -1,27 +1,56 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+ import { useState } from "react";
 import "./App.css";
+
 
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
-import ProductPage from "./Components/ProductPage/ProductPage";
-
-import AccountManager from "./Components/AccountManager/AccountManager";
-import LoginPage from "./Pages/LoginPage.jsx";
-import SignUp from "./Components/Signup";
-import LogIn from "./Components/Login";
-import Saller from "./Components/Seller";
 import Login from "./Components/Login";
+import ForgotPassword from "./Components/ForgotPassword/ForgotPassword";
+import AccountManager from "./Components/AccountManager/AccountManager";
+import SignUp from "./Components/Signup";
+import Seller from "./Components/Seller"; // novo componente
+
 
 function App() {
+  const [currentPage, setCurrentPage] = useState("login");
+
+
   return (
     <>
       <Header />
-      <SignUp />
+
+
+      {currentPage === "login" && (
+        <Login
+          goToForgotPassword={() => setCurrentPage("forgot")}
+          goToSignUp={() => setCurrentPage("signup")}
+          goToSeller={() => setCurrentPage("seller")} // novo
+        />
+      )}
+
+
+      {currentPage === "forgot" && (
+        <ForgotPassword goBackToLogin={() => setCurrentPage("login")} />
+      )}
+
+
+      {currentPage === "signup" && (
+        <SignUp goBackToLogin={() => setCurrentPage("login")} />
+      )}
+
+
+      {currentPage === "seller" && (
+        <Seller goBackToLogin={() => setCurrentPage("login")} />
+      )}
+
+
       <Footer />
     </>
   );
 }
 
+
 export default App;
+
+
+

@@ -1,21 +1,29 @@
-import React from 'react';
-import { FaUser, FaEnvelope, FaStore, FaLock } from 'react-icons/fa';
+import React from "react";
+import { FaUser, FaEnvelope, FaStore, FaLock, FaArrowLeft } from "react-icons/fa";
 
-const Main = () => {
+const Seller = ({ goBackToLogin }) => {
   const handleReset = () => {
     document.getElementById("vendedorForm").reset();
   };
 
   return (
     <main className="flex justify-center items-center min-h-screen bg-gradient-to-r from-green-100 to-white py-16 px-6">
-      <div className="w-full max-w-6xl bg-white shadow-2xl rounded-3xl p-10 border border-gray-200">
-        <h2 className="text-4xl font-bold text-red-600 mb-2">Cadastro de Vendedor</h2>
-        <p className="text-gray-600 mb-10 text-lg">
+      <div className="w-full max-w-5xl bg-white shadow-2xl rounded-3xl p-10 border border-gray-200 relative">
+        <button
+          onClick={goBackToLogin}
+          className="absolute top-5 left-5 text-sm flex items-center text-blue-600 hover:text-blue-800 transition"
+        >
+          <FaArrowLeft className="mr-2" /> Voltar para login
+        </button>
+
+        <h2 className="text-4xl font-bold text-red-600 mb-2 text-center">
+          Cadastro de Vendedor
+        </h2>
+        <p className="text-gray-600 mb-10 text-center text-lg">
           Complete os dados abaixo para criar sua conta como parceiro do ShopHere.
         </p>
 
         <form id="vendedorForm" className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Nome */}
           <div className="flex flex-col">
             <label htmlFor="nome" className="text-sm font-medium text-gray-700 mb-1">
               Nome
@@ -28,13 +36,11 @@ const Main = () => {
                 name="nome"
                 placeholder="Digite seu nome"
                 required
-                title="Digite seu primeiro nome"
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          {/* Sobrenome */}
           <div className="flex flex-col">
             <label htmlFor="sobrenome" className="text-sm font-medium text-gray-700 mb-1">
               Sobrenome
@@ -45,11 +51,10 @@ const Main = () => {
               name="sobrenome"
               placeholder="Digite seu sobrenome"
               required
-              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
             />
           </div>
 
-          {/* Email */}
           <div className="flex flex-col">
             <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
               Email
@@ -62,12 +67,11 @@ const Main = () => {
                 name="email"
                 placeholder="email@exemplo.com"
                 required
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          {/* Endereço */}
           <div className="flex flex-col">
             <label htmlFor="endereco" className="text-sm font-medium text-gray-700 mb-1">
               Endereço do Comércio
@@ -80,12 +84,11 @@ const Main = () => {
                 name="endereco"
                 placeholder="Rua, Número, Bairro"
                 required
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          {/* Senha */}
           <div className="flex flex-col md:col-span-1">
             <label htmlFor="senha" className="text-sm font-medium text-gray-700 mb-1">
               Criar Senha
@@ -98,12 +101,11 @@ const Main = () => {
                 name="senha"
                 placeholder="Digite uma senha"
                 required
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          {/* Confirmar Senha */}
           <div className="flex flex-col md:col-span-1">
             <label htmlFor="confirmarSenha" className="text-sm font-medium text-gray-700 mb-1">
               Confirmar Senha
@@ -115,22 +117,20 @@ const Main = () => {
                 name="confirmarSenha"
                 placeholder="Confirme a senha"
                 required
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 transition"
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          {/* Divider */}
           <div className="md:col-span-2">
             <hr className="my-6 border-gray-300" />
           </div>
 
-          {/* Botões */}
           <div className="md:col-span-2 flex justify-between">
             <button
               type="button"
               onClick={handleReset}
-              className="text-gray-600 hover:text-gray-900 transition font-medium"
+              className="text-gray-600 hover:text-gray-900 font-medium"
             >
               Limpar Campos
             </button>
@@ -147,4 +147,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default Seller;
