@@ -99,7 +99,14 @@ export default function Home() {
       }
       axios
         .get("/api/categories")
-        .then((res) => setCategories(res.data))
+        .then((res) => {
+          const categoriasDoBanco = res.data || [];
+          const todasCategorias = [
+            { id: null, nome: "Todos" },
+            ...categoriasDoBanco,
+          ];
+          setCategories(todasCategorias);
+        })
         .catch((err) => console.error("Erro ao buscar categorias:", err));
     };
 
@@ -180,10 +187,12 @@ export default function Home() {
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`
       min-w-[130px] bg-white rounded-xl shadow-sm flex flex-col items-center
-      justify-center text-center px-4 py-5 text-sm font-semibold hover:bg-red-100
-      transition cursor-pointer ${
-        selectedCategory === cat.id ? "bg-red-100" : ""
-      }
+  justify-center text-center px-4 py-5 text-sm font-semibold hover:bg-red-100
+  transition cursor-pointer border ${
+    selectedCategory === cat.id
+      ? "bg-red-100 border-red-400 shadow-lg scale-105"
+      : "border-gray-200"
+  }
     `}
                   >
                     <div className="text-3xl mb-2">🗂️</div>

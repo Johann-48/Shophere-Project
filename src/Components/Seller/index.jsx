@@ -1,9 +1,64 @@
-import React from "react";
-import { FaUser, FaEnvelope, FaStore, FaLock, FaArrowLeft } from "react-icons/fa";
+import React, { useState } from "react";
+import {
+  FaStore,
+  FaEnvelope,
+  FaPhone,
+  FaLock,
+  FaArrowLeft,
+} from "react-icons/fa";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Seller = ({ goBackToLogin }) => {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    nomeComercio: "",
+    email: "",
+    endereco: "",
+    telefone: "",
+    senha: "",
+    confirmarSenha: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (form.senha !== form.confirmarSenha) {
+      return alert("As senhas não coincidem.");
+    }
+
+    try {
+      // Ajuste a URL caso você tenha um endpoint de commerce
+      await axios.post("http://localhost:4000/api/commerces/signup", {
+        nome: form.nomeComercio,
+        email: form.email,
+        senha: form.senha,
+        endereco: form.endereco,
+        telefone: form.telefone,
+      });
+
+      alert("Comércio cadastrado com sucesso!");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Erro ao cadastrar comércio.");
+    }
+  };
+
   const handleReset = () => {
     document.getElementById("vendedorForm").reset();
+    setForm({
+      nomeComercio: "",
+      email: "",
+      endereco: "",
+      telefone: "",
+      senha: "",
+      confirmarSenha: "",
+    });
   };
 
   return (
@@ -17,46 +72,46 @@ const Seller = ({ goBackToLogin }) => {
         </button>
 
         <h2 className="text-4xl font-bold text-red-600 mb-2 text-center">
-          Cadastro de Vendedor
+          Cadastro de Comércio
         </h2>
         <p className="text-gray-600 mb-10 text-center text-lg">
-          Complete os dados abaixo para criar sua conta como parceiro do ShopHere.
+          Insira os dados do seu comércio para se tornar parceiro ShopHere.
         </p>
 
-        <form id="vendedorForm" className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex flex-col">
-            <label htmlFor="nome" className="text-sm font-medium text-gray-700 mb-1">
-              Nome
+        <form
+          id="vendedorForm"
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+        >
+          {/* Nome do Comércio */}
+          <div className="flex flex-col md:col-span-2">
+            <label
+              htmlFor="nomeComercio"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Nome do Comércio
             </label>
             <div className="relative">
-              <FaUser className="absolute left-3 top-3 text-gray-400" />
+              <FaStore className="absolute left-3 top-3 text-gray-400" />
               <input
                 type="text"
-                id="nome"
-                name="nome"
-                placeholder="Digite seu nome"
+                id="nomeComercio"
+                name="nomeComercio"
+                placeholder="Ex: Loja ABC"
                 required
+                value={form.nomeComercio}
+                onChange={handleChange}
                 className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
+          {/* Email */}
           <div className="flex flex-col">
-            <label htmlFor="sobrenome" className="text-sm font-medium text-gray-700 mb-1">
-              Sobrenome
-            </label>
-            <input
-              type="text"
-              id="sobrenome"
-              name="sobrenome"
-              placeholder="Digite seu sobrenome"
-              required
-              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
               Email
             </label>
             <div className="relative">
@@ -67,14 +122,20 @@ const Seller = ({ goBackToLogin }) => {
                 name="email"
                 placeholder="email@exemplo.com"
                 required
+                value={form.email}
+                onChange={handleChange}
                 className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
+          {/* Endereço */}
           <div className="flex flex-col">
-            <label htmlFor="endereco" className="text-sm font-medium text-gray-700 mb-1">
-              Endereço do Comércio
+            <label
+              htmlFor="endereco"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Endereço
             </label>
             <div className="relative">
               <FaStore className="absolute left-3 top-3 text-gray-400" />
@@ -84,13 +145,42 @@ const Seller = ({ goBackToLogin }) => {
                 name="endereco"
                 placeholder="Rua, Número, Bairro"
                 required
+                value={form.endereco}
+                onChange={handleChange}
                 className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          <div className="flex flex-col md:col-span-1">
-            <label htmlFor="senha" className="text-sm font-medium text-gray-700 mb-1">
+          {/* Telefone */}
+          <div className="flex flex-col">
+            <label
+              htmlFor="telefone"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Telefone
+            </label>
+            <div className="relative">
+              <FaPhone className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="tel"
+                id="telefone"
+                name="telefone"
+                placeholder="(99) 99999-9999"
+                required
+                value={form.telefone}
+                onChange={handleChange}
+                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
+              />
+            </div>
+          </div>
+
+          {/* Senha */}
+          <div className="flex flex-col">
+            <label
+              htmlFor="senha"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
               Criar Senha
             </label>
             <div className="relative">
@@ -101,32 +191,38 @@ const Seller = ({ goBackToLogin }) => {
                 name="senha"
                 placeholder="Digite uma senha"
                 required
+                value={form.senha}
+                onChange={handleChange}
                 className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          <div className="flex flex-col md:col-span-1">
-            <label htmlFor="confirmarSenha" className="text-sm font-medium text-gray-700 mb-1">
+          {/* Confirmar senha */}
+          <div className="flex flex-col">
+            <label
+              htmlFor="confirmarSenha"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
               Confirmar Senha
             </label>
             <div className="relative">
               <FaLock className="absolute left-3 top-3 text-gray-400" />
               <input
                 type="password"
+                id="confirmarSenha"
                 name="confirmarSenha"
                 placeholder="Confirme a senha"
                 required
+                value={form.confirmarSenha}
+                onChange={handleChange}
                 className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
               />
             </div>
           </div>
 
-          <div className="md:col-span-2">
-            <hr className="my-6 border-gray-300" />
-          </div>
-
-          <div className="md:col-span-2 flex justify-between">
+          {/* Ações */}
+          <div className="md:col-span-2 flex justify-between mt-6">
             <button
               type="button"
               onClick={handleReset}
@@ -138,7 +234,7 @@ const Seller = ({ goBackToLogin }) => {
               type="submit"
               className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold shadow transition"
             >
-              Criar Conta de Vendedor
+              Criar Comércio
             </button>
           </div>
         </form>

@@ -9,6 +9,7 @@ import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import ProductPage from "./Pages/ProductPage";
 import SellerPage from "./Pages/SellerPage";
 import AccountManagerPage from "./Pages/AccountManagerPage";
+import AboutPage from "./Pages/AboutPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
       <Route path="/produto/:id" element={<ProductPage />} />
       <Route path="/seller" element={<SellerPage />} />
+      <Route path="/about" element={<AboutPage />} />
     </Routes>
   );
 }
