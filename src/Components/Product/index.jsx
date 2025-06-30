@@ -95,6 +95,18 @@ export default function ProductPage() {
         </button>
       </div>
 
+      {/* Loja clicável */}
+      <div className="mb-4 text-sm text-gray-600">
+        Loja:{" "}
+        <button
+          onClick={() => navigate(`/comercios/${product.comercio.id}`)}
+          className="font-semibold hover:underline focus:outline-none"
+          type="button"
+        >
+          {product.comercio.nome}
+        </button>
+      </div>
+      <div className="flex items-center mb-6"></div>
       <div className="flex flex-col md:flex-row gap-10">
         {/* Thumbnails */}
         <div className="flex md:flex-col gap-4">
@@ -194,6 +206,12 @@ export default function ProductPage() {
               type="button"
             >
               Entrar em contato com a loja
+              <a
+                href={`tel:${product.comercio.telefone}`}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-red-600 text-center"
+              >
+                📞 {product.comercio.nome}
+              </a>
             </button>
             <button
               onClick={toggleFavorite}
@@ -233,7 +251,6 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
-
       {/* Avaliações */}
       <section className="mt-16">
         <h3 className="text-2xl font-semibold mb-6 select-none">
@@ -241,7 +258,6 @@ export default function ProductPage() {
         </h3>
         <p className="text-gray-500">Nenhuma avaliação disponível.</p>
       </section>
-
       {/* Relacionados */}
       <section className="mt-16">
         <h3 className="text-2xl font-semibold mb-6 select-none">

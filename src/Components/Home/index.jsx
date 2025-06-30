@@ -262,6 +262,15 @@ export default function Home() {
                         <h3 className="text-lg font-semibold mb-1">
                           {product.title || product.name}
                         </h3>
+                        {/* Nome da loja */}
+                        {product.comercioNome && (
+                          <p className="text-xs text-gray-500 mb-2">
+                            Loja:{" "}
+                            <span className="font-medium">
+                              {product.comercioNome}
+                            </span>
+                          </p>
+                        )}
                         {product.description && (
                           <p className="text-sm text-gray-500 mb-1">
                             {product.description}
@@ -343,6 +352,15 @@ export default function Home() {
                     <h4 className="text-sm font-medium">
                       {product.title || product.name}
                     </h4>
+                    {/* Nome da loja */}
+                    {product.comercioNome && (
+                      <p className="text-xs text-gray-500 mb-2">
+                        Loja:{" "}
+                        <span className="font-medium">
+                          {product.comercioNome}
+                        </span>
+                      </p>
+                    )}
                     {product.description && (
                       <p className="text-xs text-gray-500">
                         {product.description}
