@@ -99,7 +99,7 @@ export default function ProductPage() {
       <div className="mb-4 text-sm text-gray-600">
         Loja:{" "}
         <button
-          onClick={() => navigate(`/comercios/${product.comercio.id}`)}
+          onClick={() => navigate(`/commerce/${product.comercio.id}`)}
           className="font-semibold hover:underline focus:outline-none"
           type="button"
         >
