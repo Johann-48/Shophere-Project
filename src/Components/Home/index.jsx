@@ -130,6 +130,24 @@ export default function Home() {
 
       {!loading && !error && (
         <>
+          {/* Comercios - movido para cima */}
+          <section className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-red-600">🏬 Comércios</h2>
+              <Link
+                to="/commerces/search"
+                className="text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-full transition"
+              >
+                Pesquisar Comércio
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {commerces.map((c) => (
+                <CommerceCard key={c.id} commerce={c} />
+              ))}
+            </div>
+          </section>
+
           {/* Seções de categorias */}
           <section className="p-6">
             <h2 className="text-2xl font-bold mb-4">
@@ -191,24 +209,6 @@ export default function Home() {
                   onToggleLike={toggleLike}
                   onAddToCart={addToCart}
                 />
-              ))}
-            </div>
-          </section>
-
-          {/* Comercios */}
-          <section className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-red-600">🏬 Comércios</h2>
-              <Link
-                to="/commerces/search"
-                className="text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-full transition"
-              >
-                Pesquisar Comércio
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {commerces.map((c) => (
-                <CommerceCard key={c.id} commerce={c} />
               ))}
             </div>
           </section>
