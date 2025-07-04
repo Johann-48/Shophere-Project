@@ -1,3 +1,4 @@
+// src/pages/Commerce.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
@@ -22,7 +23,7 @@ export default function Commerce() {
     async function fetchCommerce() {
       try {
         setLoading(true);
-        // Busca dados do comércio
+        // Busca dados do comércio (inclui address)
         const resComm = await axios.get(`/api/commerces/${id}`);
         setCommerce(resComm.data.commerce || resComm.data);
         // Busca produtos do comércio
@@ -41,6 +42,16 @@ export default function Commerce() {
 
   if (loading) return <div className="p-6 text-center">Carregando...</div>;
   if (error) return <div className="p-6 text-center text-red-500">{error}</div>;
+
+  // Monta URL do Google Maps
+  const mapsUrl =
+    commerce.lat && commerce.lng
+      ? `https://www.google.com/maps?q=${commerce.lat},${commerce.lng}`
+      : commerce.address
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          commerce.address
+        )}`
+      : null;
 
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
@@ -63,6 +74,23 @@ export default function Commerce() {
           <h1 className="text-4xl font-extrabold mb-2">{commerce.name}</h1>
           {commerce.description && (
             <p className="text-gray-600 mb-4">{commerce.description}</p>
+          )}
+
+          {/* Exibe endereço */}
+          {commerce.address && (
+            <p className="text-sm text-gray-500 mb-2">📍 {commerce.address}</p>
+          )}
+
+          {/* Botão de localização */}
+          {mapsUrl && (
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            >
+              Ver localização
+            </a>
           )}
         </div>
       </div>

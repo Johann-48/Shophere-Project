@@ -87,15 +87,6 @@ export default function ProductCard({
           >
             Comprar
           </button>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              onToggleLike(product.id);
-            }}
-            className="text-red-500"
-          >
-            <FiHeart className={isLiked ? "fill-red-500" : "stroke-2"} />
-          </button>
         </div>
       </motion.div>
     </Link>

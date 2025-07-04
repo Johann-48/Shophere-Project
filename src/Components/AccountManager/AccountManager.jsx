@@ -22,6 +22,7 @@ export default function AccountManagerPage() {
     nome: "",
     email: "",
     telefone: "",
+    cidade: "",
   });
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function AccountManagerPage() {
           nome: data.nome || "",
           email: data.email || "",
           telefone: data.telefone || "",
+          cidade: data.cidade || "",
         });
       } catch (err) {
         console.error("Erro ao buscar dados do usuário:", err);
@@ -77,6 +79,7 @@ export default function AccountManagerPage() {
           nome: formData.nome,
           email: formData.email,
           telefone: formData.telefone,
+          cidade: formData.cidade,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -160,7 +163,11 @@ export default function AccountManagerPage() {
         </div>
         <nav className="space-y-3">
           <SidebarButton icon={<FiUser />} label={t.profile} />
-          <SidebarButton icon={<FiSettings />} label={t.settings} onClick={() => setShowSettings(true)} />
+          <SidebarButton
+            icon={<FiSettings />}
+            label={t.settings}
+            onClick={() => setShowSettings(true)}
+          />
           <SidebarButton
             icon={<FiMoon />}
             label={t.darkMode}
@@ -206,7 +213,9 @@ export default function AccountManagerPage() {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-semibold">{user.nome}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-300">{user.email}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-300">
+                {user.email}
+              </p>
             </div>
             <button
               onClick={() => window.location.reload()}
@@ -217,13 +226,31 @@ export default function AccountManagerPage() {
           </div>
 
           <form className="space-y-4">
-            <FormRow label={t.name} name="nome" value={formData.nome} onChange={handleChange} />
-            <FormRow label={t.email} name="email" type="email" value={formData.email} onChange={handleChange} />
-            <FormRow label={t.phone} name="telefone" value={formData.telefone} onChange={handleChange} />
-            <div className="flex justify-between py-2 border-b">
-              <span>{t.location}</span>
-              <span className="font-medium">Brasil</span>
-            </div>
+            <FormRow
+              label={t.name}
+              name="nome"
+              value={formData.nome}
+              onChange={handleChange}
+            />
+            <FormRow
+              label={t.email}
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <FormRow
+              label={t.phone}
+              name="telefone"
+              value={formData.telefone}
+              onChange={handleChange}
+            />
+            <FormRow
+              label={t.location}
+              name="cidade"
+              value={formData.cidade}
+              onChange={handleChange}
+            />
           </form>
 
           <div className="mt-6 text-center">
@@ -306,7 +333,9 @@ function SidebarButton({ icon, label, onClick, rightText }) {
       className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900 transition"
       type="button"
     >
-      <span className="flex items-center gap-2">{icon} {label}</span>
+      <span className="flex items-center gap-2">
+        {icon} {label}
+      </span>
       {rightText ? (
         <span className="text-sm text-gray-500">{rightText}</span>
       ) : (
@@ -341,7 +370,11 @@ function SettingsSelect({ label, options, value, onChange }) {
         onChange={(e) => onChange && onChange(e.target.value)}
       >
         {options.map((opt) => (
-          <option key={opt} value={opt.toLowerCase()} className="text-black dark:text-white bg-white dark:bg-gray-700">
+          <option
+            key={opt}
+            value={opt.toLowerCase()}
+            className="text-black dark:text-white bg-white dark:bg-gray-700"
+          >
             {opt}
           </option>
         ))}

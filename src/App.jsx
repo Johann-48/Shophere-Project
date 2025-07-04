@@ -27,11 +27,8 @@ function App() {
       <Route path="/produto/:id" element={<ProductPage />} />
       <Route path="/seller" element={<SellerPage />} />
       <Route path="/about" element={<AboutPage />} />
-<<<<<<< HEAD
       <Route path="/comparar/:codigo" element={<CompareProductPage />} />
-=======
       <Route path="/compare" element={<CompareProductPage />} />
->>>>>>> ae1e6b616fad70361535d631f478df4ff49c8286
       <Route path="/search" element={<ProductSearchPage />} />
       <Route path="/commerce/:id" element={<CommercePage />} />
       <Route path="/commerces/search" element={<CommerceSearchPage />} />

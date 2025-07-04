@@ -1,21 +1,61 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { FiSearch, FiMenu, FiX, FiUser } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 
 export default function Header() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [userName, setUserName] = useState(null);
 
-  const navLinks = [
+  // 1) No mount, tenta buscar o perfil
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    (async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserName(res.data.nome); // armazena só o nome
+      } catch {
+        // se token inválido, remove e permanece deslogado
+        localStorage.removeItem("token");
+      }
+    })();
+  }, []);
+
+  // 2) Monta os links de navegação dinamicamente
+  const defaultLinks = [
     { to: "/", label: "Página Inicial" },
     { to: "/contact", label: "Contato" },
     { to: "/about", label: "Sobre" },
+  ];
+
+  const authLinks = [
+    { to: "/accountmanager", label: userName || "Perfil", underline: true },
+    {
+      to: "/",
+      label: "Logout",
+      action: () => {
+        localStorage.clear();
+        setUserName(null);
+        navigate("/login");
+      },
+    },
+  ];
+
+  const guestLinks = [
     { to: "/seller", label: "Sign Up Seller" },
     { to: "/signup", label: "Sign Up", underline: true },
     { to: "/login", label: "Login" },
   ];
+
+  const navLinks = userName
+    ? [...defaultLinks, ...authLinks]
+    : [...defaultLinks, ...guestLinks];
 
   return (
     <header className="w-full bg-white shadow-md">
@@ -30,33 +70,47 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex space-x-6 items-center">
-          {navLinks.map((link, index) => (
+          {navLinks.map((link, idx) => (
             <motion.div
-              key={index}
+              key={idx}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link
-                to={link.to}
-                className={`text-gray-600 hover:text-green-600 transition-all duration-200 ${
-                  link.underline ? "underline font-semibold" : ""
-                }`}
-              >
-                {link.label}
-              </Link>
+              {link.action ? (
+                // link que executa ação (logout)
+                <button
+                  onClick={link.action}
+                  className={`text-gray-600 hover:text-green-600 transition-all duration-200 ${
+                    link.underline ? "underline font-semibold" : ""
+                  }`}
+                >
+                  {link.label}
+                </button>
+              ) : (
+                <Link
+                  to={link.to}
+                  className={`text-gray-600 hover:text-green-600 transition-all duration-200 ${
+                    link.underline ? "underline font-semibold" : ""
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )}
             </motion.div>
           ))}
 
-          {/* Ícone de usuário */}
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="text-gray-600 hover:text-green-600 cursor-pointer ml-4"
-            onClick={() => navigate("/accountmanager")}
-            title="Área do usuário"
-          >
-            <FiUser size={24} />
-          </motion.div>
+          {/* Ícone de usuário: só aparece se estiver logado */}
+          {userName && (
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-gray-600 hover:text-green-600 cursor-pointer ml-4"
+              onClick={() => navigate("/accountmanager")}
+              title="Área do usuário"
+            >
+              <FiUser size={24} />
+            </motion.div>
+          )}
         </nav>
 
         {/* Search */}
@@ -86,18 +140,34 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
           >
-            {navLinks.map((link, index) => (
-              <Link
-                key={index}
-                to={link.to}
-                onClick={() => setIsOpen(false)}
-                className={`block text-gray-700 hover:text-green-600 transition-all duration-200 ${
-                  link.underline ? "underline font-semibold" : ""
-                }`}
-              >
-                {link.label}
-              </Link>
+            {navLinks.map((link, idx) => (
+              <div key={idx}>
+                {link.action ? (
+                  <button
+                    onClick={() => {
+                      link.action();
+                      setIsOpen(false);
+                    }}
+                    className={`block w-full text-left text-gray-700 hover:text-green-600 transition-all duration-200 ${
+                      link.underline ? "underline font-semibold" : ""
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                ) : (
+                  <Link
+                    to={link.to}
+                    onClick={() => setIsOpen(false)}
+                    className={`block text-gray-700 hover:text-green-600 transition-all duration-200 ${
+                      link.underline ? "underline font-semibold" : ""
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                )}
+              </div>
             ))}
+            {/* Search mobile */}
             <div className="relative w-full">
               <input
                 type="text"

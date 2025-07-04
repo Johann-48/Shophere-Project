@@ -77,36 +77,7 @@ export default function Home() {
         <button
           onClick={() => setShowMenu(!showMenu)}
           className="text-gray-700 hover:text-black p-2 rounded-full hover:bg-gray-200 transition"
-        >
-          <FiMoreVertical size={22} />
-        </button>
-        <AnimatePresence>
-          {showMenu && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200"
-            >
-              <ul className="text-sm text-gray-700">
-                <Link to="/accountmanager">
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    Perfil
-                  </li>
-                </Link>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Configurações
-                </li>
-                <li
-                  onClick={handleLogout}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500 font-medium"
-                >
-                  Sair
-                </li>
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        ></button>
       </div>
 
       {/* Banner */}

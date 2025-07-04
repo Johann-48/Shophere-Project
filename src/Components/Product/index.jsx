@@ -28,6 +28,7 @@ export default function ProductPage() {
         setLoading(true);
         const res = await axios.get(`/api/products/${id}`);
         const prod = res.data;
+        console.log("Produto carregado:", prod); // 👈 VERIFIQUE ISSO NO CONSOLE
         setProduct(prod);
         setMainImage(prod.mainImage || "/assets/placeholder.png");
         setThumbnails(prod.thumbnails || []);
@@ -213,6 +214,15 @@ export default function ProductPage() {
                 📞 {product.comercio.nome}
               </a>
             </button>
+            {product.barcode && (
+              <button
+                onClick={() => navigate(`/comparar/${product.barcode}`)}
+                className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                type="button"
+              >
+                Comparar Preços 🛍️
+              </button>
+            )}
             <button
               onClick={toggleFavorite}
               aria-label={
