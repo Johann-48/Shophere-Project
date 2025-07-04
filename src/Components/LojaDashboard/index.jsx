@@ -1,0 +1,591 @@
+import React, { useState, useRef, useEffect } from "react";
+import {
+  FiPlusCircle,
+  FiEdit,
+  FiMessageSquare,
+  FiCamera,
+  FiTrash2,
+  FiSave,
+  FiXCircle,
+  FiPaperclip,
+  FiMic,
+  FiSend,
+  FiX,
+} from "react-icons/fi";
+
+export default function LojaDashboard() {
+  const [abaSelecionada, setAbaSelecionada] = useState("adicionarproduto");
+
+  return (
+    <div
+      className="min-h-screen p-6 flex flex-col items-center transition-all duration-500"
+      style={{ background: "linear-gradient(to bottom, #d4f7d4, #ffffff)" }}
+    >
+      {/* Logo da Loja */}
+      <div className="w-full max-w-4xl relative flex items-center justify-center mb-6">
+        <div className="relative group">
+          <img
+            src="https://superberton.com.br/wp-content/uploads/2017/04/logo.png"
+            alt="Logo da Loja"
+            className="rounded-2xl w-60 h-60 object-contain bg-white p-4 shadow-xl transition-transform duration-300 group-hover:scale-105"
+          />
+          <button className="absolute bottom-2 right-2 p-2 bg-white/80 rounded-full shadow hover:scale-110 transition">
+            <FiCamera className="text-zinc-700" />
+          </button>
+        </div>
+      </div>
+
+      {/* Título */}
+      <h1 className="text-4xl font-extrabold mb-4 text-zinc-800 text-center tracking-tight">
+        Painel da Loja
+      </h1>
+
+      {/* Abas com animação */}
+      <div className="flex justify-center mb-6 gap-3 flex-wrap">
+        <AbaBotao
+          ativa={abaSelecionada === "adicionarproduto"}
+          onClick={() => setAbaSelecionada("adicionarproduto")}
+          icon={<FiPlusCircle />}
+          texto="Adicionar Produto"
+        />
+        <AbaBotao
+          ativa={abaSelecionada === "meusprodutos"}
+          onClick={() => setAbaSelecionada("meusprodutos")}
+          icon={<FiEdit />}
+          texto="Meus Produtos"
+        />
+        <AbaBotao
+          ativa={abaSelecionada === "editarloja"}
+          onClick={() => setAbaSelecionada("editarloja")}
+          icon={<FiEdit />}
+          texto="Editar Loja"
+        />
+        {/* Removida a aba Mensagens */}
+        <AbaBotao
+          ativa={abaSelecionada === "batepapo"}
+          onClick={() => setAbaSelecionada("batepapo")}
+          icon={<FiMessageSquare />}
+          texto="Bate-papo"
+        />
+      </div>
+
+      {/* Conteúdo da aba */}
+      <div className="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-xl transition-all duration-300 animate-fade-in">
+        {abaSelecionada === "adicionarproduto" && <AdicionarProduto />}
+        {abaSelecionada === "meusprodutos" && <MeusProdutos />}
+        {abaSelecionada === "editarloja" && <EditarLoja />}
+        {abaSelecionada === "batepapo" && <BatePapo />}
+      </div>
+    </div>
+  );
+}
+
+function AbaBotao({ ativa, onClick, icon, texto }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-6 py-3 rounded-xl border transition-all duration-300 shadow-sm transform hover:scale-105 ${
+        ativa
+          ? "bg-blue-600 text-white border-blue-600 shadow-md"
+          : "bg-white text-zinc-700 border-zinc-300"
+      }`}
+    >
+      {icon} {texto}
+    </button>
+  );
+}
+
+function AdicionarProduto() {
+  return (
+    <form className="grid gap-5">
+      <h2 className="text-2xl font-semibold mb-1 text-zinc-800">Novo Produto</h2>
+      <AnimatedInput placeholder="Nome do Produto" />
+      <AnimatedInput placeholder="Preço" type="number" />
+      <AnimatedInput placeholder="Categoria" />
+      <AnimatedInput placeholder="Imagem (URL)" />
+      <AnimatedTextarea placeholder="Descrição" />
+      <button className="bg-blue-600 text-white py-3 font-medium rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">
+        Adicionar Produto
+      </button>
+    </form>
+  );
+}
+
+function MeusProdutos() {
+  const [produtos, setProdutos] = useState([
+    {
+      id: 1,
+      nome: "Camiseta Azul",
+      preco: 49.9,
+      categoria: "Roupas",
+      imagem:
+        "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=200&q=80",
+      descricao: "Camiseta confortável de algodão azul.",
+    },
+    {
+      id: 2,
+      nome: "Tênis Esportivo",
+      preco: 199.99,
+      categoria: "Calçados",
+      imagem:
+        "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=200&q=80",
+      descricao: "Tênis leve e confortável para corrida.",
+    },
+  ]);
+
+  const [produtoEditandoId, setProdutoEditandoId] = useState(null);
+  const [produtoEditando, setProdutoEditando] = useState(null);
+
+  function iniciarEdicao(produto) {
+    setProdutoEditandoId(produto.id);
+    setProdutoEditando({ ...produto });
+  }
+
+  function cancelarEdicao() {
+    setProdutoEditandoId(null);
+    setProdutoEditando(null);
+  }
+
+  function handleEditChange(e) {
+    const { name, value } = e.target;
+    setProdutoEditando((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function salvarEdicao(e) {
+    e.preventDefault();
+    if (!produtoEditando.nome || !produtoEditando.preco) {
+      alert("Preencha nome e preço!");
+      return;
+    }
+    setProdutos((prev) =>
+      prev.map((p) =>
+        p.id === produtoEditandoId
+          ? { ...produtoEditando, preco: parseFloat(produtoEditando.preco) }
+          : p
+      )
+    );
+    cancelarEdicao();
+  }
+
+  function excluirProduto(id) {
+    if (window.confirm("Tem certeza que deseja excluir este produto?")) {
+      setProdutos((prev) => prev.filter((p) => p.id !== id));
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold mb-4 text-zinc-800">Meus Produtos</h2>
+
+      {produtos.length === 0 && (
+        <p className="text-zinc-500">Nenhum produto cadastrado ainda.</p>
+      )}
+
+      <div className="grid gap-6">
+        {produtos.map((produto) =>
+          produtoEditandoId === produto.id ? (
+            <form
+              key={produto.id}
+              onSubmit={salvarEdicao}
+              className="bg-gray-50 rounded-lg p-5 shadow-md flex flex-col gap-4 transition-shadow hover:shadow-lg"
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={produtoEditando.imagem || "https://via.placeholder.com/100"}
+                  alt={produtoEditando.nome}
+                  className="w-24 h-24 object-cover rounded-lg border border-gray-300"
+                />
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    name="nome"
+                    value={produtoEditando.nome}
+                    onChange={handleEditChange}
+                    placeholder="Nome do Produto"
+                    required
+                  />
+                  <input
+                    className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    name="preco"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={produtoEditando.preco}
+                    onChange={handleEditChange}
+                    placeholder="Preço"
+                    required
+                  />
+                  <input
+                    className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    name="categoria"
+                    value={produtoEditando.categoria}
+                    onChange={handleEditChange}
+                    placeholder="Categoria"
+                  />
+                  <input
+                    className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    name="imagem"
+                    value={produtoEditando.imagem}
+                    onChange={handleEditChange}
+                    placeholder="URL da Imagem"
+                  />
+                </div>
+              </div>
+              <textarea
+                name="descricao"
+                value={produtoEditando.descricao}
+                onChange={handleEditChange}
+                placeholder="Descrição"
+                rows={3}
+                className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+              />
+              <div className="flex gap-4 justify-end">
+                <button
+                  type="button"
+                  onClick={cancelarEdicao}
+                  className="flex items-center gap-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                >
+                  <FiXCircle /> Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                >
+                  <FiSave /> Salvar
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div
+              key={produto.id}
+              className="bg-gray-50 rounded-lg p-5 shadow-md flex items-center gap-6 transition-shadow hover:shadow-lg"
+            >
+              <img
+                src={produto.imagem || "https://via.placeholder.com/100"}
+                alt={produto.nome}
+                className="w-24 h-24 object-cover rounded-lg border border-gray-300"
+              />
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold">{produto.nome}</h3>
+                <p className="text-blue-600 font-bold text-lg">
+                  R$ {produto.preco.toFixed(2).replace(".", ",")}
+                </p>
+                <p className="text-sm text-zinc-600 italic">
+                  {produto.categoria || "Sem categoria"}
+                </p>
+                <p className="mt-2 text-zinc-700">{produto.descricao}</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => iniciarEdicao(produto)}
+                  className="flex items-center gap-1 px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                  title="Editar Produto"
+                >
+                  <FiEdit />
+                </button>
+                <button
+                  onClick={() => excluirProduto(produto.id)}
+                  className="flex items-center gap-1 px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                  title="Excluir Produto"
+                >
+                  <FiTrash2 />
+                </button>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EditarLoja() {
+  return (
+    <form className="grid gap-5">
+      <h2 className="text-2xl font-semibold mb-1 text-zinc-800">Editar Informações da Loja</h2>
+      <AnimatedInput placeholder="Nome da Loja" />
+      <AnimatedInput placeholder="Endereço" />
+      <AnimatedInput placeholder="Link da Logo" />
+      <AnimatedTextarea placeholder="Descrição da Loja" />
+      <button className="bg-green-600 text-white py-3 font-medium rounded-lg hover:bg-green-700 transition shadow-md hover:shadow-lg">
+        Salvar Alterações
+      </button>
+    </form>
+  );
+}
+
+function BatePapo() {
+  // Estado clientes e mensagens
+  const [clientes, setClientes] = useState([
+    {
+      id: 1,
+      nome: "João Silva",
+      mensagens: [
+        { id: 1, tipo: "texto", texto: "Olá, o produto X está disponível?", deCliente: true },
+        { id: 2, tipo: "texto", texto: "Sim, temos em estoque.", deCliente: false },
+      ],
+    },
+    {
+      id: 2,
+      nome: "Maria Oliveira",
+      mensagens: [
+        { id: 1, tipo: "texto", texto: "Qual o prazo de entrega?", deCliente: true },
+        { id: 2, tipo: "texto", texto: "Normalmente 3 a 5 dias úteis.", deCliente: false },
+      ],
+    },
+  ]);
+  const [clienteSelecionado, setClienteSelecionado] = useState(clientes[0]);
+  const [novaMensagem, setNovaMensagem] = useState("");
+  const [imagemParaEnviar, setImagemParaEnviar] = useState(null);
+  const [gravando, setGravando] = useState(false);
+  const [audioURL, setAudioURL] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
+
+  // Atualizar cliente selecionado no array clientes
+  function atualizarClienteAtualizado(clienteAtualizado) {
+    setClientes((prev) =>
+      prev.map((c) => (c.id === clienteAtualizado.id ? clienteAtualizado : c))
+    );
+    setClienteSelecionado(clienteAtualizado);
+  }
+
+  // Enviar mensagem texto
+  function enviarMensagemTexto(e) {
+    e.preventDefault();
+    if (!novaMensagem.trim()) return;
+
+    const novaMsg = {
+      id: Date.now(),
+      tipo: "texto",
+      texto: novaMensagem.trim(),
+      deCliente: false,
+    };
+
+    const clienteAtualizado = {
+      ...clienteSelecionado,
+      mensagens: [...clienteSelecionado.mensagens, novaMsg],
+    };
+    atualizarClienteAtualizado(clienteAtualizado);
+    setNovaMensagem("");
+  }
+
+  // Enviar imagem
+  function enviarImagem(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Gerar URL para preview e salvar no estado
+    const url = URL.createObjectURL(file);
+
+    const novaMsg = {
+      id: Date.now(),
+      tipo: "imagem",
+      imagemURL: url,
+      file,
+      deCliente: false,
+    };
+
+    const clienteAtualizado = {
+      ...clienteSelecionado,
+      mensagens: [...clienteSelecionado.mensagens, novaMsg],
+    };
+    atualizarClienteAtualizado(clienteAtualizado);
+    e.target.value = null; // reset input
+  }
+
+  // Gravação áudio
+  async function iniciarGravacao() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Seu navegador não suporta gravação de áudio.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        chunksRef.current.push(e.data);
+      };
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        chunksRef.current = [];
+        const url = URL.createObjectURL(blob);
+        setAudioURL(url);
+
+        const novaMsg = {
+          id: Date.now(),
+          tipo: "audio",
+          audioBlob: blob,
+          audioURL: url,
+          deCliente: false,
+        };
+
+        const clienteAtualizado = {
+          ...clienteSelecionado,
+          mensagens: [...clienteSelecionado.mensagens, novaMsg],
+        };
+        atualizarClienteAtualizado(clienteAtualizado);
+        setGravando(false);
+      };
+      mediaRecorderRef.current.start();
+      setGravando(true);
+    } catch (err) {
+      alert("Erro ao acessar microfone.");
+    }
+  }
+
+  function pararGravacao() {
+    if (mediaRecorderRef.current && gravando) {
+      mediaRecorderRef.current.stop();
+    }
+  }
+
+  return (
+    <div className="flex flex-col md:flex-row gap-6 h-[600px]">
+      {/* Lista clientes */}
+      <div className="md:w-1/3 bg-gray-100 rounded-lg p-4 overflow-y-auto shadow">
+        <h2 className="text-xl font-semibold mb-4">Clientes</h2>
+        {clientes.map((cliente) => (
+          <button
+            key={cliente.id}
+            onClick={() => setClienteSelecionado(cliente)}
+            className={`w-full text-left px-4 py-2 rounded mb-2 transition ${
+              clienteSelecionado?.id === cliente.id
+                ? "bg-blue-600 text-white"
+                : "hover:bg-blue-100"
+            }`}
+          >
+            {cliente.nome}
+          </button>
+        ))}
+      </div>
+
+      {/* Conversa */}
+      <div className="md:w-2/3 bg-gray-50 rounded-lg flex flex-col p-4 shadow">
+        <h2 className="text-xl font-semibold mb-4">
+          Conversa com {clienteSelecionado?.nome}
+        </h2>
+        <div
+          className="flex-1 overflow-y-auto mb-4 flex flex-col gap-2 px-2"
+          style={{ scrollbarWidth: "thin" }}
+        >
+          {clienteSelecionado?.mensagens.map((msg) => {
+            const isCliente = msg.deCliente;
+            return (
+              <div
+                key={msg.id}
+                className={`max-w-[75%] p-3 rounded-lg whitespace-pre-wrap break-words flex flex-col ${
+                  isCliente
+                    ? "bg-green-200 self-start"
+                    : "bg-blue-500 text-white self-end"
+                }`}
+                style={{ alignSelf: isCliente ? "flex-start" : "flex-end" }}
+              >
+                {msg.tipo === "texto" && <span>{msg.texto}</span>}
+                {msg.tipo === "imagem" && (
+                  <img
+                    src={msg.imagemURL}
+                    alt="imagem enviada"
+                    className="max-w-xs rounded cursor-pointer hover:brightness-90 transition"
+                    onClick={() => window.open(msg.imagemURL, "_blank")}
+                  />
+                )}
+                {msg.tipo === "audio" && (
+                  <audio controls src={msg.audioURL} className="max-w-xs rounded" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Formulario para enviar */}
+        <form onSubmit={enviarMensagemTexto} className="flex flex-col gap-3">
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={novaMensagem}
+              onChange={(e) => setNovaMensagem(e.target.value)}
+              placeholder="Digite sua mensagem..."
+              className="flex-1 border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="submit"
+              disabled={!novaMensagem.trim()}
+              className={`p-3 rounded bg-blue-600 text-white flex items-center justify-center transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              <FiSend size={20} />
+            </button>
+          </div>
+
+          <div className="flex gap-4 items-center">
+            {/* Upload imagem */}
+            <label
+              htmlFor="input-file"
+              className="cursor-pointer p-2 bg-gray-200 rounded hover:bg-gray-300 transition flex items-center gap-1"
+              title="Enviar foto"
+            >
+              <FiCamera size={20} />
+              <input
+                id="input-file"
+                type="file"
+                accept="image/*"
+                onChange={enviarImagem}
+                className="hidden"
+              />
+            </label>
+
+            {/* Botão gravar áudio */}
+            {!gravando ? (
+              <button
+                type="button"
+                onClick={iniciarGravacao}
+                className="p-2 bg-red-500 rounded hover:bg-red-600 transition flex items-center gap-1 text-white"
+                title="Gravar áudio"
+              >
+                <FiMic size={20} />
+                Gravar
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={pararGravacao}
+                className="p-2 bg-gray-700 rounded hover:bg-gray-800 transition flex items-center gap-1 text-white"
+                title="Parar gravação"
+              >
+                <FiX size={20} />
+                Parar
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function AnimatedInput({ placeholder, type = "text", name, value, onChange, required }) {
+  return (
+    <input
+      name={name}
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      required={required}
+      className="p-3 rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 placeholder:text-gray-400"
+    />
+  );
+}
+
+function AnimatedTextarea({ placeholder, name, value, onChange }) {
+  return (
+    <textarea
+      name={name}
+      rows={4}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="p-3 rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 placeholder:text-gray-400 resize-none"
+    />
+  );
+}

@@ -203,16 +203,13 @@ export default function ProductPage() {
 
           <div className="flex gap-4 mt-auto">
             <button
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-red-600"
-              type="button"
+          onClick={() =>
+           (window.location.href = `tel:${product.comercio.telefone}`)
+         }
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-red-600"
+            type="button"
             >
-              Entrar em contato com a loja
-              <a
-                href={`tel:${product.comercio.telefone}`}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-red-600 text-center"
-              >
-                📞 {product.comercio.nome}
-              </a>
+            📞 Entrar em contato com a loja – {product.comercio?.nome || "Loja"}
             </button>
             {product.barcode && (
               <button

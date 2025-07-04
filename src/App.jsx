@@ -14,6 +14,7 @@ import CompareProductPage from "./Pages/CompareProductPage";
 import ProductSearchPage from "./Pages/ProductSearchPage";
 import CommercePage from "./Pages/CommercePage";
 import CommerceSearchPage from "./Pages/CommerceSearchPage";
+import LojaDashboard from "./Components/LojaDashboard";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
       <Route path="/search" element={<ProductSearchPage />} />
       <Route path="/commerce/:id" element={<CommercePage />} />
       <Route path="/commerces/search" element={<CommerceSearchPage />} />
+      <Route path="/lojadashboard" element={<LojaDashboard />} />
     </Routes>
   );
 }

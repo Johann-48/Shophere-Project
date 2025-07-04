@@ -1,272 +1,258 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FiSend, FiMic, FiImage, FiTrash2 } from "react-icons/fi";
-import { motion } from "framer-motion";
+import { FiSend, FiCamera, FiMic, FiX } from "react-icons/fi";
 
-const vendedores = [
-  { id: 1, nome: "João", empresa: "Loja X", avatar: "https://i.pravatar.cc/150?img=3" },
-  { id: 2, nome: "Maria", empresa: "Varejo Center", avatar: "https://i.pravatar.cc/150?img=5" },
-  { id: 3, nome: "Carlos", empresa: "Carlos Eletrônicos", avatar: "https://i.pravatar.cc/150?img=8" },
-  { id: 4, nome: "Fernanda", empresa: "Estilo Fashion", avatar: "https://i.pravatar.cc/150?img=12" },
-  { id: 5, nome: "Ricardo", empresa: "Games House", avatar: "https://i.pravatar.cc/150?img=15" },
+const lojas = [
+  { id: 1, nome: "Loja Centro", imagem: "https://via.placeholder.com/40" },
+  { id: 2, nome: "Loja Norte", imagem: "https://via.placeholder.com/40" },
+  { id: 3, nome: "Loja Sul", imagem: "https://via.placeholder.com/40" },
 ];
 
-export default function ContactPage() {
-  const [vendedorSelecionado, setVendedorSelecionado] = useState(vendedores[0]);
-  const [mensagem, setMensagem] = useState("");
-  const [conversas, setConversas] = useState({});
-  const [digitando, setDigitando] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const chatRef = useRef(null);
+function ContatoLoja() {
+  const [lojaSelecionada, setLojaSelecionada] = useState(lojas[0]);
+  const [mensagensPorLoja, setMensagensPorLoja] = useState({});
+  const [novaMensagem, setNovaMensagem] = useState("");
+  const [gravando, setGravando] = useState(false);
   const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
+  const chatRef = useRef(null);
 
-  const handleEnviar = () => {
-    if (!mensagem.trim()) return;
-    enviarMensagem("texto", mensagem);
-    setMensagem("");
-  };
+  const idLoja = lojaSelecionada.id;
 
-  const enviarMensagem = (tipo, conteudo) => {
-    const novaMensagem = {
-      tipo,
-      conteudo,
-      remetente: "usuario",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-
-    setConversas((prev) => {
-      const atual = prev[vendedorSelecionado.id] || [];
-      return {
-        ...prev,
-        [vendedorSelecionado.id]: [...atual, novaMensagem],
-      };
-    });
-
-    simulateRespostaAutomatica();
-  };
-
-  const simulateRespostaAutomatica = () => {
-    setDigitando(true);
-    setTimeout(() => {
-      const resposta = {
-        tipo: "texto",
-        conteudo: "Assim que possível irei resolver isso e entrar em contato 😊",
-        remetente: "vendedor",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      };
-
-      setConversas((prev) => {
-        const atual = prev[vendedorSelecionado.id] || [];
-        return {
-          ...prev,
-          [vendedorSelecionado.id]: [...atual, resposta],
-        };
-      });
-
-      setDigitando(false);
-    }, 1800);
-  };
-
-  const handleImagem = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        enviarMensagem("imagem", reader.result);
-      };
-      reader.readAsDataURL(file);
+  useEffect(() => {
+    const salvo = localStorage.getItem("mensagensPorLoja");
+    if (salvo) {
+      setMensagensPorLoja(JSON.parse(salvo));
     }
-  };
+  }, []);
 
-  const iniciarGravacao = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const chunks = [];
-
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        const url = URL.createObjectURL(blob);
-        enviarMensagem("audio", url);
-      };
-
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.error("Erro ao gravar áudio:", err);
-    }
-  };
-
-  const pararGravacao = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const limparConversa = () => {
-    setConversas((prev) => ({
-      ...prev,
-      [vendedorSelecionado.id]: [],
-    }));
-  };
+  useEffect(() => {
+    localStorage.setItem("mensagensPorLoja", JSON.stringify(mensagensPorLoja));
+  }, [mensagensPorLoja]);
 
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
-  }, [conversas, digitando]);
+  }, [mensagensPorLoja, idLoja]);
+
+  const mensagensAtuais = mensagensPorLoja[idLoja] || [];
+
+  function atualizarMensagens(novas) {
+    setMensagensPorLoja((prev) => ({
+      ...prev,
+      [idLoja]: novas,
+    }));
+  }
+
+  function enviarTexto(e) {
+    e.preventDefault();
+    if (!novaMensagem.trim()) return;
+
+    const novaMsg = {
+      id: Date.now(),
+      tipo: "texto",
+      texto: novaMensagem.trim(),
+      deCliente: true,
+    };
+
+    atualizarMensagens([...mensagensAtuais, novaMsg]);
+    setNovaMensagem("");
+  }
+
+  function enviarImagem(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+
+    const novaMsg = {
+      id: Date.now(),
+      tipo: "imagem",
+      imagemURL: url,
+      file,
+      deCliente: true,
+    };
+
+    atualizarMensagens([...mensagensAtuais, novaMsg]);
+    e.target.value = null;
+  }
+
+  async function iniciarGravacao() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        chunksRef.current.push(e.data);
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        chunksRef.current = [];
+        const url = URL.createObjectURL(blob);
+
+        const novaMsg = {
+          id: Date.now(),
+          tipo: "audio",
+          audioBlob: blob,
+          audioURL: url,
+          deCliente: true,
+        };
+
+        atualizarMensagens([...mensagensAtuais, novaMsg]);
+        setGravando(false);
+      };
+
+      mediaRecorderRef.current.start();
+      setGravando(true);
+    } catch {
+      alert("Erro ao acessar microfone.");
+    }
+  }
+
+  function pararGravacao() {
+    if (mediaRecorderRef.current && gravando) {
+      mediaRecorderRef.current.stop();
+    }
+  }
 
   return (
-    <div className="flex h-screen bg-zinc-100 text-gray-800">
-      {/* Sidebar */}
-      <aside className="w-[280px] bg-white border-r shadow-lg flex flex-col overflow-y-auto">
-        <div className="px-4 py-4 border-b">
-          <h2 className="text-lg font-bold text-indigo-600">Vendedores</h2>
-        </div>
-
-        {vendedores.map((v) => {
-          const isSelected = vendedorSelecionado.id === v.id;
-          const ultimasMsgs = conversas[v.id] || [];
-          const ultimaMsg = ultimasMsgs[ultimasMsgs.length - 1];
-          const preview = ultimaMsg?.tipo === "texto"
-            ? ultimaMsg.conteudo.slice(0, 22) + (ultimaMsg.conteudo.length > 22 ? "..." : "")
-            : ultimaMsg?.tipo === "imagem"
-            ? "[Imagem]"
-            : ultimaMsg?.tipo === "audio"
-            ? "[Áudio]"
-            : "Nenhuma mensagem ainda";
-
-          const online = v.id % 2 === 0; // Simula status online
-
-          return (
-            <div
-              key={v.id}
-              onClick={() => setVendedorSelecionado(v)}
-              className={`flex items-center px-4 py-3 gap-3 cursor-pointer transition-all hover:bg-zinc-100 ${
-                isSelected ? "bg-zinc-100" : ""
+    <div className="flex h-[600px] max-w-6xl mx-auto bg-gray-50 shadow rounded overflow-hidden mt-[40px] mb-[40px]">
+      {/* Lista de Lojas */}
+      <aside className="w-1/4 bg-white border-r p-4 overflow-y-auto">
+        <h2 className="text-lg font-semibold mb-3">Lojas Disponíveis</h2>
+        <ul className="space-y-3">
+          {lojas.map((loja) => (
+            <li
+              key={loja.id}
+              onClick={() => setLojaSelecionada(loja)}
+              className={`flex items-center gap-3 p-2 rounded cursor-pointer transition ${
+                lojaSelecionada.id === loja.id
+                  ? "bg-blue-100 text-blue-700 font-semibold"
+                  : "hover:bg-gray-100"
               }`}
             >
-              <div className="relative">
-                <img
-                  src={v.avatar}
-                  alt={v.nome}
-                  className={`w-12 h-12 rounded-full border-2 ${
-                    isSelected ? "border-indigo-500" : "border-transparent"
-                  }`}
-                />
-                <span
-                  className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
-                    online ? "bg-green-500" : "bg-gray-300"
-                  }`}
-                />
-              </div>
-
-              <div className="flex-1">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-semibold text-sm truncate text-gray-800">{v.nome}</h4>
-                  <span className="text-[10px] text-gray-400">
-                    {ultimaMsg?.timestamp || ""}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 truncate">{preview}</p>
-                <p className="text-[11px] text-indigo-400 font-medium">{v.empresa}</p>
-              </div>
-            </div>
-          );
-        })}
+              <img
+                src={loja.imagem}
+                alt={loja.nome}
+                className="w-10 h-10 rounded-full object-cover border"
+              />
+              {loja.nome}
+            </li>
+          ))}
+        </ul>
       </aside>
 
-      {/* Chat principal */}
-      <main className="flex-1 flex flex-col bg-white rounded-xl shadow-xl overflow-hidden relative">
-        {/* Topo */}
-        <div className="flex items-center justify-between px-5 py-3 border-b">
-          <div className="flex items-center gap-3">
-            <img src={vendedorSelecionado.avatar} className="w-10 h-10 rounded-full" />
-            <div>
-              <h3 className="font-bold">{vendedorSelecionado.nome}</h3>
-              <span className="text-sm text-indigo-500">{vendedorSelecionado.empresa}</span>
-            </div>
-          </div>
-          <button
-            onClick={limparConversa}
-            className="text-gray-400 hover:text-red-500 transition"
-            title="Limpar conversa"
-          >
-            <FiTrash2 size={20} />
-          </button>
+      {/* Área de Chat */}
+      <div className="flex-1 flex flex-col p-4">
+        <div className="flex items-center gap-3 mb-2">
+          <img
+            src={lojaSelecionada.imagem}
+            alt={lojaSelecionada.nome}
+            className="w-10 h-10 rounded-full object-cover border"
+          />
+          <h2 className="text-xl font-bold text-blue-800">
+            Contato com {lojaSelecionada.nome}
+          </h2>
         </div>
 
-        {/* Mensagens */}
-        <div ref={chatRef} className="flex-1 overflow-y-auto px-5 py-4 bg-zinc-50 space-y-4">
-          {(conversas[vendedorSelecionado.id] || []).map((msg, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`flex ${msg.remetente === "usuario" ? "justify-end" : "justify-start"}`}
-            >
+        <div
+          ref={chatRef}
+          className="flex-1 overflow-y-auto space-y-4 p-4 bg-white rounded shadow-inner"
+        >
+          {mensagensAtuais.map((msg) => {
+            const isCliente = msg.deCliente;
+            return (
               <div
-                className={`max-w-[70%] px-4 py-2 rounded-2xl shadow-sm ${
-                  msg.remetente === "usuario"
-                    ? "bg-indigo-500 text-white rounded-br-none"
-                    : "bg-gray-200 text-gray-800 rounded-bl-none"
+                key={msg.id}
+                className={`flex ${
+                  isCliente ? "justify-start" : "justify-end"
                 }`}
               >
-                {msg.tipo === "texto" && <p>{msg.conteudo}</p>}
-                {msg.tipo === "imagem" && (
-                  <img src={msg.conteudo} className="rounded-md mt-1 max-h-60 object-cover" />
-                )}
-                {msg.tipo === "audio" && (
-                  <audio controls src={msg.conteudo} className="w-full mt-1" />
-                )}
-                <div className="text-[10px] text-gray-300 mt-1 text-right">{msg.timestamp}</div>
+                <div
+                  className={`p-3 rounded-xl max-w-[75%] shadow transition-all ${
+                    isCliente
+                      ? "bg-green-100 text-gray-800 rounded-bl-none"
+                      : "bg-blue-500 text-white rounded-br-none"
+                  }`}
+                >
+                  {msg.tipo === "texto" && <span>{msg.texto}</span>}
+                  {msg.tipo === "imagem" && (
+                    <img
+                      src={msg.imagemURL}
+                      alt="imagem"
+                      className="rounded max-w-full cursor-pointer hover:brightness-90"
+                      onClick={() => window.open(msg.imagemURL, "_blank")}
+                    />
+                  )}
+                  {msg.tipo === "audio" && (
+                    <audio controls src={msg.audioURL} className="w-full mt-1" />
+                  )}
+                </div>
               </div>
-            </motion.div>
-          ))}
-          {digitando && <p className="italic text-sm text-gray-400">Digitando...</p>}
+            );
+          })}
         </div>
 
-        {/* Caixa de entrada */}
-        <div className="p-3 border-t flex items-center gap-2 bg-white">
-          <input
-            id="imagemInput"
-            type="file"
-            accept="image/*"
-            onChange={handleImagem}
-            className="hidden"
-          />
-          <label htmlFor="imagemInput" className="text-gray-500 hover:text-indigo-500 cursor-pointer">
-            <FiImage size={20} />
-          </label>
+        {/* Formulário */}
+        <form onSubmit={enviarTexto} className="mt-4 space-y-3">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={novaMensagem}
+              onChange={(e) => setNovaMensagem(e.target.value)}
+              placeholder="Digite sua mensagem..."
+              className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="submit"
+              disabled={!novaMensagem.trim()}
+              className="p-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              <FiSend size={20} />
+            </button>
+          </div>
 
-          <button
-            onClick={isRecording ? pararGravacao : iniciarGravacao}
-            className={`text-gray-500 hover:text-red-500 transition ${
-              isRecording ? "animate-pulse" : ""
-            }`}
-          >
-            <FiMic size={20} />
-          </button>
+          <div className="flex gap-3 items-center">
+            <label
+              htmlFor="file-upload"
+              className="flex items-center gap-1 cursor-pointer bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded"
+              title="Enviar imagem"
+            >
+              <FiCamera size={18} />
+              <span>Imagem</span>
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                onChange={enviarImagem}
+                className="hidden"
+              />
+            </label>
 
-          <input
-            type="text"
-            placeholder="Digite uma mensagem..."
-            value={mensagem}
-            onChange={(e) => setMensagem(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
-            className="flex-1 px-4 py-2 rounded-full bg-zinc-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-          />
-
-          <button
-            onClick={handleEnviar}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-full transition"
-          >
-            <FiSend size={18} />
-          </button>
-        </div>
-      </main>
+            {!gravando ? (
+              <button
+                type="button"
+                onClick={iniciarGravacao}
+                className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded"
+              >
+                <FiMic size={18} />
+                Gravar
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={pararGravacao}
+                className="flex items-center gap-1 bg-gray-700 hover:bg-gray-800 text-white px-3 py-2 rounded"
+              >
+                <FiX size={18} />
+                Parar
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
+
+export default ContatoLoja;
