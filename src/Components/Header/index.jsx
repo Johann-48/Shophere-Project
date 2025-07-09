@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FiSearch, FiMenu, FiX, FiUser } from "react-icons/fi";
+import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
@@ -9,7 +9,6 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState(null);
 
-  // 1) No mount, tenta buscar o perfil
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -19,10 +18,9 @@ export default function Header() {
         const res = await axios.get("http://localhost:4000/api/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUserName(res.data.nome); // armazena só o nome
+        setUserName(res.data.nome);
       } catch (err) {
         if (err.response?.status === 401) {
-          // token expirado
           localStorage.clear();
         } else {
           console.error("Erro ao buscar perfil:", err);
@@ -31,7 +29,6 @@ export default function Header() {
     })();
   }, []);
 
-  // 2) Monta os links de navegação dinamicamente
   const defaultLinks = [
     { to: "/", label: "Página Inicial" },
     { to: "/contact", label: "Contato" },
@@ -40,11 +37,7 @@ export default function Header() {
 
   const authLinks = [
     { to: "/accountmanager", label: userName || "Perfil", underline: true },
-    {
-      to: "/lojadashboard",
-      label: "Dashboard" || "Dashboard",
-      underline: false,
-    },
+    { to: "/lojadashboard", label: "Dashboard", underline: false },
     {
       to: "/",
       label: "Logout",
@@ -72,8 +65,8 @@ export default function Header() {
         {/* Logo */}
         <div className="text-3xl font-extrabold tracking-wide">
           <Link to="/">
-            <span className="text-green-500">SHOP</span>
-            <span className="text-gray-800">HERE</span>
+            <span className="text-black">SHOP</span>
+            <span className="text-[#0D47A1]">HERE</span>
           </Link>
         </div>
 
@@ -86,10 +79,9 @@ export default function Header() {
               whileTap={{ scale: 0.95 }}
             >
               {link.action ? (
-                // link que executa ação (logout)
                 <button
                   onClick={link.action}
-                  className={`text-gray-600 hover:text-green-600 transition-all duration-200 ${
+                  className={`text-gray-600 hover:text-[#0D47A1] transition-all duration-200 ${
                     link.underline ? "underline font-semibold" : ""
                   }`}
                 >
@@ -98,7 +90,7 @@ export default function Header() {
               ) : (
                 <Link
                   to={link.to}
-                  className={`text-gray-600 hover:text-green-600 transition-all duration-200 ${
+                  className={`text-gray-600 hover:text-[#0D47A1] transition-all duration-200 ${
                     link.underline ? "underline font-semibold" : ""
                   }`}
                 >
@@ -114,9 +106,9 @@ export default function Header() {
           <input
             type="text"
             placeholder="O que está procurando?"
-            className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-green-400 transition-shadow"
+            className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0D47A1] transition-shadow"
           />
-          <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#0D47A1] cursor-pointer" />
         </div>
 
         {/* Mobile menu button */}
@@ -144,7 +136,7 @@ export default function Header() {
                       link.action();
                       setIsOpen(false);
                     }}
-                    className={`block w-full text-left text-gray-700 hover:text-green-600 transition-all duration-200 ${
+                    className={`block w-full text-left text-gray-700 hover:text-[#0D47A1] transition-all duration-200 ${
                       link.underline ? "underline font-semibold" : ""
                     }`}
                   >
@@ -154,7 +146,7 @@ export default function Header() {
                   <Link
                     to={link.to}
                     onClick={() => setIsOpen(false)}
-                    className={`block text-gray-700 hover:text-green-600 transition-all duration-200 ${
+                    className={`block text-gray-700 hover:text-[#0D47A1] transition-all duration-200 ${
                       link.underline ? "underline font-semibold" : ""
                     }`}
                   >
@@ -168,9 +160,9 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Buscar..."
-                className="w-full mt-2 border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full mt-2 border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0D47A1]"
               />
-              <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#0D47A1] cursor-pointer" />
             </div>
           </motion.div>
         )}

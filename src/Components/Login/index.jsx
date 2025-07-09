@@ -31,10 +31,8 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
 
       const { token, user } = response.data;
 
-      // Atualiza o contexto em tempo real
-      login(token, user.role); // 👈 ESSENCIAL
+      login(token, user.role);
 
-      // (opcional) se quiser manter esses dados no localStorage:
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("userId", user.id);
 
@@ -51,7 +49,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
   };
 
   return (
-    <main className="flex-1 bg-gradient-to-r from-green-100 to-white py-16 px-6 min-h-screen">
+    <main className="flex-1 min-h-screen py-16 px-6 bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         {/* Imagem lateral */}
         <motion.div
@@ -63,7 +61,8 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
           <img
             src="https://exxacta.com.br/wp-content/uploads/2023/11/apoie-o-conceito-de-negocio-local_52683-41530.jpg"
             alt="Login Visual"
-            className="w-full rounded-3xl shadow-2xl"
+            className="w-full rounded-3xl shadow-lg"
+            style={{ borderRadius: "1.5rem" }}
           />
         </motion.div>
 
@@ -72,18 +71,18 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="bg-white p-10 rounded-3xl shadow-xl border border-gray-200 transition-all"
+          className="bg-white p-12 rounded-3xl shadow-lg border border-[#90CAF9] transition-all"
         >
-          <h2 className="text-4xl font-bold text-gray-800 mb-6 text-center">
+          <h2 className="text-4xl font-bold text-black mb-6 text-center">
             Bem-vindo de volta!
           </h2>
-          <p className="text-gray-500 text-center mb-8">
+          <p className="text-black text-center mb-8">
             Insira seus dados para acessar sua conta
           </p>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-gray-600 mb-1">
+              <label htmlFor="email" className="block text-black mb-1 font-semibold">
                 Email ou Celular
               </label>
               <div className="relative">
@@ -94,14 +93,14 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
                   value={emailOrPhone}
                   onChange={(e) => setEmailOrPhone(e.target.value)}
                   required
-                  className="w-full pl-10 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
                   placeholder="seuemail@exemplo.com"
+                  className="w-full pl-10 border border-gray-300 rounded-lg px-4 py-2 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-gray-600 mb-1">
+              <label htmlFor="password" className="block text-black mb-1 font-semibold">
                 Senha
               </label>
               <div className="relative">
@@ -112,8 +111,8 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-10 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
                   placeholder="********"
+                  className="w-full pl-10 pr-10 border border-gray-300 rounded-lg px-4 py-2 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                 />
                 <button
                   type="button"
@@ -126,7 +125,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
 
               <span
                 onClick={() => navigate("/forgotPassword")}
-                className="text-sm text-blue-600 hover:underline float-right mt-1 cursor-pointer"
+                className="text-sm text-gray-600 hover:underline float-right mt-1 cursor-pointer"
               >
                 Esqueceu sua senha?
               </span>
@@ -135,8 +134,10 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-green-500 text-white py-3 rounded-lg transition text-lg font-semibold ${
-                loading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+              className={`w-full bg-black text-white py-3 rounded-lg transition text-lg font-semibold ${
+                loading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-800"
               }`}
             >
               {loading ? "Entrando..." : "Entrar"}
@@ -151,15 +152,15 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
 
           {/* Login Social */}
           <div className="flex items-center my-6">
-            <hr className="flex-grow border-t border-gray-300" />
-            <span className="mx-3 text-gray-400">ou</span>
-            <hr className="flex-grow border-t border-gray-300" />
+            <hr className="flex-grow border-t border-[#90CAF9]" />
+            <span className="mx-3 text-black font-medium">ou</span>
+            <hr className="flex-grow border-t border-[#90CAF9]" />
           </div>
 
           <div className="space-y-3">
             <button
               type="button"
-              className="w-full flex items-center justify-center border border-gray-300 py-2 rounded-lg hover:bg-gray-100 transition"
+              className="w-full flex items-center justify-center border border-[#64B5F6] py-2 rounded-lg bg-white text-[#1976D2] hover:bg-[#E3F2FD] transition font-semibold"
             >
               <img
                 src="https://www.svgrepo.com/show/355037/google.svg"
@@ -171,7 +172,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
 
             <button
               type="button"
-              className="w-full flex items-center justify-center border border-gray-300 py-2 rounded-lg hover:bg-gray-100 transition"
+              className="w-full flex items-center justify-center border border-[#64B5F6] py-2 rounded-lg bg-white text-[#1976D2] hover:bg-[#E3F2FD] transition font-semibold"
             >
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
@@ -183,21 +184,21 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
           </div>
 
           {/* Links para cadastro */}
-          <p className="text-center text-gray-600 mt-6">
+          <p className="text-center text-black mt-6 font-medium">
             Não possui uma conta?{" "}
             <span
               onClick={() => navigate("/signup")}
-              className="text-blue-600 hover:underline font-medium cursor-pointer"
+              className="text-[#1565C0] hover:underline font-semibold cursor-pointer"
             >
               Cadastre-se
             </span>
           </p>
 
-          <p className="text-center text-gray-600 mt-2">
+          <p className="text-center text-black mt-2 font-medium">
             É vendedor?{" "}
             <span
               onClick={() => navigate("/seller")}
-              className="text-red-600 hover:underline font-medium cursor-pointer"
+              className="text-red-600 hover:underline font-semibold cursor-pointer"
             >
               Criar conta
             </span>

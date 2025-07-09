@@ -32,7 +32,6 @@ const Seller = ({ goBackToLogin }) => {
     }
 
     try {
-      // Ajuste a URL caso você tenha um endpoint de commerce
       await axios.post("http://localhost:4000/api/commerces/signup", {
         nome: form.nomeComercio,
         email: form.email,
@@ -62,11 +61,11 @@ const Seller = ({ goBackToLogin }) => {
   };
 
   return (
-    <main className="flex justify-center items-center min-h-screen bg-gradient-to-r from-green-100 to-white py-16 px-6">
-      <div className="w-full max-w-5xl bg-white shadow-2xl rounded-3xl p-10 border border-gray-200 relative">
+    <main className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white py-16 px-6">
+      <div className="w-full max-w-5xl bg-white shadow-2xl rounded-3xl p-10 border border-[#43444F] relative">
         <button
           onClick={goBackToLogin}
-          className="absolute top-5 left-5 text-sm flex items-center text-blue-600 hover:text-blue-800 transition"
+          className="absolute top-5 left-5 text-sm flex items-center text-[#282933] hover:text-[#43444F] transition"
         >
           <FaArrowLeft className="mr-2" /> Voltar para login
         </button>
@@ -74,7 +73,7 @@ const Seller = ({ goBackToLogin }) => {
         <h2 className="text-4xl font-bold text-red-600 mb-2 text-center">
           Cadastro de Comércio
         </h2>
-        <p className="text-gray-600 mb-10 text-center text-lg">
+        <p className="text-[#43444F] mb-10 text-center text-lg">
           Insira os dados do seu comércio para se tornar parceiro ShopHere.
         </p>
 
@@ -87,7 +86,7 @@ const Seller = ({ goBackToLogin }) => {
           <div className="flex flex-col md:col-span-2">
             <label
               htmlFor="nomeComercio"
-              className="text-sm font-medium text-gray-700 mb-1"
+              className="text-sm font-medium text-[#43444F] mb-1"
             >
               Nome do Comércio
             </label>
@@ -101,7 +100,7 @@ const Seller = ({ goBackToLogin }) => {
                 required
                 value={form.nomeComercio}
                 onChange={handleChange}
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
+                className="w-full pl-10 border border-[#43444F] rounded-lg p-3 focus:ring-2 focus:ring-[#282933]"
               />
             </div>
           </div>
@@ -110,7 +109,7 @@ const Seller = ({ goBackToLogin }) => {
           <div className="flex flex-col">
             <label
               htmlFor="email"
-              className="text-sm font-medium text-gray-700 mb-1"
+              className="text-sm font-medium text-[#43444F] mb-1"
             >
               Email
             </label>
@@ -124,7 +123,7 @@ const Seller = ({ goBackToLogin }) => {
                 required
                 value={form.email}
                 onChange={handleChange}
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
+                className="w-full pl-10 border border-[#43444F] rounded-lg p-3 focus:ring-2 focus:ring-[#282933]"
               />
             </div>
           </div>
@@ -133,7 +132,7 @@ const Seller = ({ goBackToLogin }) => {
           <div className="flex flex-col">
             <label
               htmlFor="endereco"
-              className="text-sm font-medium text-gray-700 mb-1"
+              className="text-sm font-medium text-[#43444F] mb-1"
             >
               Endereço
             </label>
@@ -147,7 +146,7 @@ const Seller = ({ goBackToLogin }) => {
                 required
                 value={form.endereco}
                 onChange={handleChange}
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
+                className="w-full pl-10 border border-[#43444F] rounded-lg p-3 focus:ring-2 focus:ring-[#282933]"
               />
             </div>
           </div>
@@ -156,7 +155,7 @@ const Seller = ({ goBackToLogin }) => {
           <div className="flex flex-col">
             <label
               htmlFor="telefone"
-              className="text-sm font-medium text-gray-700 mb-1"
+              className="text-sm font-medium text-[#43444F] mb-1"
             >
               Telefone
             </label>
@@ -170,7 +169,7 @@ const Seller = ({ goBackToLogin }) => {
                 required
                 value={form.telefone}
                 onChange={handleChange}
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
+                className="w-full pl-10 border border-[#43444F] rounded-lg p-3 focus:ring-2 focus:ring-[#282933]"
               />
             </div>
           </div>
@@ -179,7 +178,7 @@ const Seller = ({ goBackToLogin }) => {
           <div className="flex flex-col">
             <label
               htmlFor="senha"
-              className="text-sm font-medium text-gray-700 mb-1"
+              className="text-sm font-medium text-[#43444F] mb-1"
             >
               Criar Senha
             </label>
@@ -193,7 +192,7 @@ const Seller = ({ goBackToLogin }) => {
                 required
                 value={form.senha}
                 onChange={handleChange}
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
+                className="w-full pl-10 border border-[#43444F] rounded-lg p-3 focus:ring-2 focus:ring-[#282933]"
               />
             </div>
           </div>
@@ -202,7 +201,7 @@ const Seller = ({ goBackToLogin }) => {
           <div className="flex flex-col">
             <label
               htmlFor="confirmarSenha"
-              className="text-sm font-medium text-gray-700 mb-1"
+              className="text-sm font-medium text-[#43444F] mb-1"
             >
               Confirmar Senha
             </label>
@@ -216,7 +215,7 @@ const Seller = ({ goBackToLogin }) => {
                 required
                 value={form.confirmarSenha}
                 onChange={handleChange}
-                className="w-full pl-10 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300"
+                className="w-full pl-10 border border-[#43444F] rounded-lg p-3 focus:ring-2 focus:ring-[#282933]"
               />
             </div>
           </div>
@@ -226,7 +225,7 @@ const Seller = ({ goBackToLogin }) => {
             <button
               type="button"
               onClick={handleReset}
-              className="text-gray-600 hover:text-gray-900 font-medium"
+              className="text-[#43444F] hover:text-[#282933] font-medium"
             >
               Limpar Campos
             </button>

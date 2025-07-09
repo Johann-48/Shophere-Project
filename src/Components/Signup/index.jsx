@@ -20,7 +20,6 @@ export default function Signup({ goBackToLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Verificação básica de senha
     if (form.password !== form.confirmPassword) {
       alert("As senhas não coincidem.");
       return;
@@ -37,7 +36,7 @@ export default function Signup({ goBackToLogin }) {
       );
 
       alert("Conta criada com sucesso!");
-      navigate("/login"); // Redireciona para login após cadastro
+      navigate("/login");
     } catch (error) {
       console.error("Erro no cadastro:", error);
       if (error.response?.data?.message) {
@@ -49,22 +48,21 @@ export default function Signup({ goBackToLogin }) {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-100 to-white px-4 py-12">
+    <main className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white px-4 py-12">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-lg bg-white p-10 rounded-3xl shadow-xl border border-gray-200"
+        className="w-full max-w-lg bg-white p-10 rounded-3xl shadow-xl border border-[#90CAF9]"
       >
-        <h2 className="text-4xl font-bold text-green-600 mb-3 text-center">
+        <h2 className="text-4xl font-bold text-[#1565C0] mb-3 text-center">
           Criar Conta
         </h2>
-        <p className="text-gray-600 mb-8 text-center">
+        <p className="text-gray-700 mb-8 text-center">
           Preencha os campos abaixo para se cadastrar
         </p>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Nome */}
           <div>
             <label
               htmlFor="name"
@@ -73,7 +71,7 @@ export default function Signup({ goBackToLogin }) {
               Nome
             </label>
             <div className="relative">
-              <FaUser className="absolute left-3 top-3.5 text-gray-400" />
+              <FaUser className="absolute left-3 top-3.5 text-gray-500" />
               <input
                 id="name"
                 type="text"
@@ -81,12 +79,11 @@ export default function Signup({ goBackToLogin }) {
                 value={form.name}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
               />
             </div>
           </div>
 
-          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -95,7 +92,7 @@ export default function Signup({ goBackToLogin }) {
               Email
             </label>
             <div className="relative">
-              <FaEnvelope className="absolute left-3 top-3.5 text-gray-400" />
+              <FaEnvelope className="absolute left-3 top-3.5 text-gray-500" />
               <input
                 id="email"
                 type="email"
@@ -103,12 +100,11 @@ export default function Signup({ goBackToLogin }) {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
               />
             </div>
           </div>
 
-          {/* Senha */}
           <div>
             <label
               htmlFor="password"
@@ -117,7 +113,7 @@ export default function Signup({ goBackToLogin }) {
               Criar Senha
             </label>
             <div className="relative">
-              <FaLock className="absolute left-3 top-3.5 text-gray-400" />
+              <FaLock className="absolute left-3 top-3.5 text-gray-500" />
               <input
                 id="password"
                 type="password"
@@ -125,12 +121,11 @@ export default function Signup({ goBackToLogin }) {
                 value={form.password}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
               />
             </div>
           </div>
 
-          {/* Confirmar senha */}
           <div>
             <label
               htmlFor="confirmPassword"
@@ -139,7 +134,7 @@ export default function Signup({ goBackToLogin }) {
               Confirmar Senha
             </label>
             <div className="relative">
-              <FaLock className="absolute left-3 top-3.5 text-gray-400" />
+              <FaLock className="absolute left-3 top-3.5 text-gray-500" />
               <input
                 id="confirmPassword"
                 type="password"
@@ -147,30 +142,28 @@ export default function Signup({ goBackToLogin }) {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
               />
             </div>
           </div>
 
-          {/* Botão principal */}
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold text-lg hover:bg-green-600 transition"
+            className="w-full bg-[#1565C0] text-white py-3 rounded-lg font-semibold text-lg hover:bg-[#0D47A1] transition"
           >
             Criar Conta
           </button>
         </form>
 
-        {/* Login com redes sociais */}
         <div className="my-6">
           <div className="flex items-center">
-            <hr className="flex-grow border-gray-300" />
-            <span className="mx-4 text-gray-400">ou</span>
-            <hr className="flex-grow border-gray-300" />
+            <hr className="flex-grow border-[#90CAF9]" />
+            <span className="mx-4 text-gray-600">ou</span>
+            <hr className="flex-grow border-[#90CAF9]" />
           </div>
 
           <div className="mt-6 space-y-3">
-            <button className="w-full flex items-center justify-center border border-gray-300 py-2 rounded-lg hover:bg-gray-100 transition">
+            <button className="w-full flex items-center justify-center border border-[#64B5F6] py-2 rounded-lg bg-white text-[#1976D2] hover:bg-[#E3F2FD] transition font-semibold">
               <img
                 src="https://www.svgrepo.com/show/355037/google.svg"
                 alt="Google"
@@ -178,7 +171,7 @@ export default function Signup({ goBackToLogin }) {
               />
               Cadastrar com o Google
             </button>
-            <button className="w-full flex items-center justify-center border border-gray-300 py-2 rounded-lg hover:bg-gray-100 transition">
+            <button className="w-full flex items-center justify-center border border-[#64B5F6] py-2 rounded-lg bg-white text-[#1976D2] hover:bg-[#E3F2FD] transition font-semibold">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
                 alt="Apple"
@@ -189,12 +182,11 @@ export default function Signup({ goBackToLogin }) {
           </div>
         </div>
 
-        {/* Voltar ao login */}
-        <p className="text-center text-gray-600 mt-6">
+        <p className="text-center text-gray-700 mt-6">
           Já possui uma conta?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-blue-600 hover:underline font-medium cursor-pointer"
+            className="text-[#1565C0] hover:underline font-semibold cursor-pointer"
           >
             Fazer Login
           </span>
