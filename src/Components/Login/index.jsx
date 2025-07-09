@@ -30,6 +30,8 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("userId", user.id);
 
       navigate("/");
     } catch (err) {

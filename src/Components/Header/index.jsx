@@ -20,9 +20,13 @@ export default function Header() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserName(res.data.nome); // armazena só o nome
-      } catch {
-        // se token inválido, remove e permanece deslogado
-        localStorage.removeItem("token");
+      } catch (err) {
+        if (err.response?.status === 401) {
+          // token expirado
+          localStorage.clear();
+        } else {
+          console.error("Erro ao buscar perfil:", err);
+        }
       }
     })();
   }, []);
@@ -36,6 +40,11 @@ export default function Header() {
 
   const authLinks = [
     { to: "/accountmanager", label: userName || "Perfil", underline: true },
+    {
+      to: "/lojadashboard",
+      label: "Dashboard" || "Dashboard",
+      underline: false,
+    },
     {
       to: "/",
       label: "Logout",

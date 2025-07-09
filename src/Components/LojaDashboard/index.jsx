@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import {
   FiPlusCircle,
@@ -96,17 +97,115 @@ function AbaBotao({ ativa, onClick, icon, texto }) {
 }
 
 function AdicionarProduto() {
+  const [nome, setNome] = useState("");
+  const [preco, setPreco] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [marca, setMarca] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [codigoBarras, setCodigoBarras] = useState("");
+  const [mensagem, setMensagem] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMensagem("");
+
+    const token = localStorage.getItem("token");
+
+    try {
+      await axios.post(
+        "http://localhost:4000/api/products",
+        {
+          nome,
+          preco,
+          categoria,
+          descricao,
+          marca,
+          quantidade,
+          codigo_barras: codigoBarras,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMensagem("Produto cadastrado com sucesso!");
+      setNome("");
+      setPreco("");
+      setCategoria("");
+      setDescricao("");
+      setMarca("");
+      setQuantidade("");
+      setCodigoBarras("");
+    } catch (error) {
+      setMensagem("Erro ao cadastrar produto.");
+      console.error("Erro:", error);
+    }
+  };
+
   return (
-    <form className="grid gap-5">
-      <h2 className="text-2xl font-semibold mb-1 text-zinc-800">Novo Produto</h2>
-      <AnimatedInput placeholder="Nome do Produto" />
-      <AnimatedInput placeholder="Preço" type="number" />
-      <AnimatedInput placeholder="Categoria" />
-      <AnimatedInput placeholder="Imagem (URL)" />
-      <AnimatedTextarea placeholder="Descrição" />
-      <button className="bg-blue-600 text-white py-3 font-medium rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">
+    <form onSubmit={handleSubmit} className="grid gap-5">
+      <h2 className="text-2xl font-semibold mb-1 text-zinc-800">
+        Novo Produto
+      </h2>
+
+      <AnimatedInput
+        placeholder="Nome do Produto"
+        value={nome}
+        onChange={(e) => setNome(e.target.value)}
+        required
+      />
+      <AnimatedInput
+        placeholder="Preço"
+        type="number"
+        value={preco}
+        onChange={(e) => setPreco(e.target.value)}
+        required
+      />
+      <AnimatedInput
+        placeholder="Categoria"
+        value={categoria}
+        onChange={(e) => setCategoria(e.target.value)}
+      />
+      <AnimatedTextarea
+        placeholder="Descrição"
+        value={descricao}
+        onChange={(e) => setDescricao(e.target.value)}
+      />
+
+      {/* NOVOS CAMPOS */}
+      <AnimatedInput
+        placeholder="Marca"
+        value={marca}
+        onChange={(e) => setMarca(e.target.value)}
+      />
+      <AnimatedInput
+        placeholder="Quantidade"
+        type="number"
+        value={quantidade}
+        onChange={(e) => setQuantidade(e.target.value)}
+      />
+      <AnimatedInput
+        placeholder="Código de Barras"
+        value={codigoBarras}
+        onChange={(e) => setCodigoBarras(e.target.value)}
+      />
+
+      <button
+        type="submit"
+        className="bg-blue-600 text-white py-3 font-medium rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg"
+      >
         Adicionar Produto
       </button>
+
+      {mensagem && (
+        <p className="text-sm text-center font-medium text-zinc-700">
+          {mensagem}
+        </p>
+      )}
     </form>
   );
 }
@@ -175,7 +274,9 @@ function MeusProdutos() {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-4 text-zinc-800">Meus Produtos</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-zinc-800">
+        Meus Produtos
+      </h2>
 
       {produtos.length === 0 && (
         <p className="text-zinc-500">Nenhum produto cadastrado ainda.</p>
@@ -191,7 +292,9 @@ function MeusProdutos() {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={produtoEditando.imagem || "https://via.placeholder.com/100"}
+                  src={
+                    produtoEditando.imagem || "https://via.placeholder.com/100"
+                  }
                   alt={produtoEditando.nome}
                   className="w-24 h-24 object-cover rounded-lg border border-gray-300"
                 />
@@ -302,7 +405,9 @@ function MeusProdutos() {
 function EditarLoja() {
   return (
     <form className="grid gap-5">
-      <h2 className="text-2xl font-semibold mb-1 text-zinc-800">Editar Informações da Loja</h2>
+      <h2 className="text-2xl font-semibold mb-1 text-zinc-800">
+        Editar Informações da Loja
+      </h2>
       <AnimatedInput placeholder="Nome da Loja" />
       <AnimatedInput placeholder="Endereço" />
       <AnimatedInput placeholder="Link da Logo" />
@@ -321,16 +426,36 @@ function BatePapo() {
       id: 1,
       nome: "João Silva",
       mensagens: [
-        { id: 1, tipo: "texto", texto: "Olá, o produto X está disponível?", deCliente: true },
-        { id: 2, tipo: "texto", texto: "Sim, temos em estoque.", deCliente: false },
+        {
+          id: 1,
+          tipo: "texto",
+          texto: "Olá, o produto X está disponível?",
+          deCliente: true,
+        },
+        {
+          id: 2,
+          tipo: "texto",
+          texto: "Sim, temos em estoque.",
+          deCliente: false,
+        },
       ],
     },
     {
       id: 2,
       nome: "Maria Oliveira",
       mensagens: [
-        { id: 1, tipo: "texto", texto: "Qual o prazo de entrega?", deCliente: true },
-        { id: 2, tipo: "texto", texto: "Normalmente 3 a 5 dias úteis.", deCliente: false },
+        {
+          id: 1,
+          tipo: "texto",
+          texto: "Qual o prazo de entrega?",
+          deCliente: true,
+        },
+        {
+          id: 2,
+          tipo: "texto",
+          texto: "Normalmente 3 a 5 dias úteis.",
+          deCliente: false,
+        },
       ],
     },
   ]);
@@ -491,7 +616,11 @@ function BatePapo() {
                   />
                 )}
                 {msg.tipo === "audio" && (
-                  <audio controls src={msg.audioURL} className="max-w-xs rounded" />
+                  <audio
+                    controls
+                    src={msg.audioURL}
+                    className="max-w-xs rounded"
+                  />
                 )}
               </div>
             );
@@ -563,7 +692,14 @@ function BatePapo() {
   );
 }
 
-function AnimatedInput({ placeholder, type = "text", name, value, onChange, required }) {
+function AnimatedInput({
+  placeholder,
+  type = "text",
+  name,
+  value,
+  onChange,
+  required,
+}) {
   return (
     <input
       name={name}
