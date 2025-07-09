@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaLock, FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useAuth } from "../../contexts/AuthContext"; // ou caminho correto
 
 export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
   const [showPassword, setShowPassword] = useState(false);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,9 +30,12 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
       );
 
       const { token, user } = response.data;
-      localStorage.setItem("token", token);
+
+      // Atualiza o contexto em tempo real
+      login(token, user.role); // 👈 ESSENCIAL
+
+      // (opcional) se quiser manter esses dados no localStorage:
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("role", user.role);
       localStorage.setItem("userId", user.id);
 
       navigate("/");

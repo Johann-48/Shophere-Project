@@ -211,29 +211,24 @@ function AdicionarProduto() {
 }
 
 function MeusProdutos() {
-  const [produtos, setProdutos] = useState([
-    {
-      id: 1,
-      nome: "Camiseta Azul",
-      preco: 49.9,
-      categoria: "Roupas",
-      imagem:
-        "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=200&q=80",
-      descricao: "Camiseta confortável de algodão azul.",
-    },
-    {
-      id: 2,
-      nome: "Tênis Esportivo",
-      preco: 199.99,
-      categoria: "Calçados",
-      imagem:
-        "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=200&q=80",
-      descricao: "Tênis leve e confortável para corrida.",
-    },
-  ]);
-
+  const [produtos, setProdutos] = useState([]);
   const [produtoEditandoId, setProdutoEditandoId] = useState(null);
   const [produtoEditando, setProdutoEditando] = useState(null);
+
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("/api/products/meus", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProdutos(res.data);
+      } catch (err) {
+        console.error("Erro ao carregar produtos:", err);
+      }
+    };
+    fetchProdutos();
+  }, []);
 
   function iniciarEdicao(produto) {
     setProdutoEditandoId(produto.id);
@@ -250,25 +245,42 @@ function MeusProdutos() {
     setProdutoEditando((prev) => ({ ...prev, [name]: value }));
   }
 
-  function salvarEdicao(e) {
+  async function salvarEdicao(e) {
     e.preventDefault();
     if (!produtoEditando.nome || !produtoEditando.preco) {
       alert("Preencha nome e preço!");
       return;
     }
-    setProdutos((prev) =>
-      prev.map((p) =>
-        p.id === produtoEditandoId
-          ? { ...produtoEditando, preco: parseFloat(produtoEditando.preco) }
-          : p
-      )
-    );
-    cancelarEdicao();
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`/api/products/${produtoEditando.id}`, produtoEditando, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setProdutos((prev) =>
+        prev.map((p) => (p.id === produtoEditandoId ? produtoEditando : p))
+      );
+      cancelarEdicao();
+    } catch (err) {
+      console.error("Erro ao salvar edição:", err);
+      alert("Erro ao salvar edição.");
+    }
   }
 
-  function excluirProduto(id) {
+  async function excluirProduto(id) {
     if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-      setProdutos((prev) => prev.filter((p) => p.id !== id));
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete(`/api/products/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setProdutos((prev) => prev.filter((p) => p.id !== id));
+      } catch (err) {
+        console.error("Erro ao excluir produto:", err);
+        alert("Erro ao excluir produto.");
+      }
     }
   }
 
@@ -331,6 +343,27 @@ function MeusProdutos() {
                     value={produtoEditando.imagem}
                     onChange={handleEditChange}
                     placeholder="URL da Imagem"
+                  />
+
+                  <input
+                    name="marca"
+                    value={produtoEditando.marca || ""}
+                    onChange={handleEditChange}
+                    placeholder="Marca"
+                  />
+                  <input
+                    name="quantidade"
+                    type="number"
+                    min="0"
+                    value={produtoEditando.quantidade || ""}
+                    onChange={handleEditChange}
+                    placeholder="Quantidade"
+                  />
+                  <input
+                    name="codigoBarras"
+                    value={produtoEditando.codigoBarras || ""}
+                    onChange={handleEditChange}
+                    placeholder="Código de Barras"
                   />
                 </div>
               </div>
@@ -403,16 +436,101 @@ function MeusProdutos() {
 }
 
 function EditarLoja() {
+  const [form, setForm] = useState({
+    nome: "",
+    endereco: "",
+    logoUrl: "",
+    descricao: "",
+  });
+  const [loading, setLoading] = useState(true);
+
+  // 1) buscar dados ao montar
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const { data } = await axios.get("/api/commerces/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setForm({
+          nome: data.nome,
+          endereco: data.endereco,
+          logoUrl: data.logoUrl,
+          descricao: data.descricao,
+        });
+      } catch (err) {
+        console.error("Erro ao carregar dados da loja:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // 2) handler genérico de inputs
+  const handleChange = (e) => {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  // 3) enviar PUT
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        "/api/commerces/me",
+        {
+          nome: form.nome,
+          endereco: form.endereco,
+          logoUrl: form.logoUrl,
+          descricao: form.descricao,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert("Loja atualizada com sucesso!");
+    } catch (err) {
+      console.error("Erro ao salvar alterações:", err);
+      alert("Erro ao salvar. Tente novamente.");
+    }
+  };
+
+  if (loading) return <p>Carregando dados...</p>;
+
   return (
-    <form className="grid gap-5">
+    <form className="grid gap-5" onSubmit={handleSubmit}>
       <h2 className="text-2xl font-semibold mb-1 text-zinc-800">
         Editar Informações da Loja
       </h2>
-      <AnimatedInput placeholder="Nome da Loja" />
-      <AnimatedInput placeholder="Endereço" />
-      <AnimatedInput placeholder="Link da Logo" />
-      <AnimatedTextarea placeholder="Descrição da Loja" />
-      <button className="bg-green-600 text-white py-3 font-medium rounded-lg hover:bg-green-700 transition shadow-md hover:shadow-lg">
+
+      <AnimatedInput
+        name="nome"
+        value={form.nome}
+        onChange={handleChange}
+        placeholder="Nome da Loja"
+      />
+      <AnimatedInput
+        name="endereco"
+        value={form.endereco}
+        onChange={handleChange}
+        placeholder="Endereço"
+      />
+      <AnimatedInput
+        name="logoUrl"
+        value={form.logoUrl}
+        onChange={handleChange}
+        placeholder="Link da Logo"
+      />
+      <AnimatedTextarea
+        name="descricao"
+        value={form.descricao}
+        onChange={handleChange}
+        placeholder="Descrição da Loja"
+      />
+
+      <button
+        type="submit"
+        className="bg-green-600 text-white py-3 font-medium rounded-lg hover:bg-green-700 transition shadow-md hover:shadow-lg"
+      >
         Salvar Alterações
       </button>
     </form>

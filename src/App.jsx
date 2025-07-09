@@ -15,15 +15,18 @@ import ProductSearchPage from "./Pages/ProductSearchPage";
 import CommercePage from "./Pages/CommercePage";
 import CommerceSearchPage from "./Pages/CommerceSearchPage";
 import LojaDashboardPage from "./Pages/LojaDashboardPage";
+import NotFoundPage from "./Pages/NotFoundPage";
+
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
+      {/* Rotas públicas */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/contact" element={<ContactSellerPage />} />
-      <Route path="/accountmanager" element={<AccountManagerPage />} />
       <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
       <Route path="/produto/:id" element={<ProductPage />} />
       <Route path="/seller" element={<SellerPage />} />
@@ -33,7 +36,19 @@ function App() {
       <Route path="/search" element={<ProductSearchPage />} />
       <Route path="/commerce/:id" element={<CommercePage />} />
       <Route path="/commerces/search" element={<CommerceSearchPage />} />
-      <Route path="/lojadashboard" element={<LojaDashboardPage />} />
+
+      {/* rota só para usuários “user” */}
+      <Route element={<ProtectedRoute requiredRole="user" />}>
+        <Route path="/accountmanager" element={<AccountManagerPage />} />
+      </Route>
+
+      {/* rota só para “commerce” */}
+      <Route element={<ProtectedRoute requiredRole="commerce" />}>
+        <Route path="/lojadashboard" element={<LojaDashboardPage />} />
+      </Route>
+
+      {/* fallback */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

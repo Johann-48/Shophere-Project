@@ -107,19 +107,6 @@ export default function Header() {
               )}
             </motion.div>
           ))}
-
-          {/* Ícone de usuário: só aparece se estiver logado */}
-          {userName && (
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-gray-600 hover:text-green-600 cursor-pointer ml-4"
-              onClick={() => navigate("/accountmanager")}
-              title="Área do usuário"
-            >
-              <FiUser size={24} />
-            </motion.div>
-          )}
         </nav>
 
         {/* Search */}
