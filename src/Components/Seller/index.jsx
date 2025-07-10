@@ -64,12 +64,11 @@ const Seller = ({ goBackToLogin }) => {
     <main className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white py-16 px-6">
       <div className="w-full max-w-5xl bg-white shadow-2xl rounded-3xl p-10 border border-[#43444F] relative">
         <button
-          onClick={goBackToLogin}
+          onClick={() => navigate("/login")}
           className="absolute top-5 left-5 text-sm flex items-center text-[#282933] hover:text-[#43444F] transition"
         >
           <FaArrowLeft className="mr-2" /> Voltar para login
         </button>
-
         <h2 className="text-4xl font-bold text-red-600 mb-2 text-center">
           Cadastro de Comércio
         </h2>

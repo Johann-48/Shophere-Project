@@ -8,7 +8,6 @@ import {
   FiTrash2,
   FiSave,
   FiXCircle,
-  FiPaperclip,
   FiMic,
   FiSend,
   FiX,
@@ -16,6 +15,25 @@ import {
 
 export default function LojaDashboard() {
   const [abaSelecionada, setAbaSelecionada] = useState("adicionarproduto");
+  const [logoUrl, setLogoUrl] = useState(""); // ← estado para a logo
+  const [nomeLoja, setNomeLoja] = useState(""); // ← opcional, caso queira mostrar o nome
+
+  // Busca logo e nome da loja quando o componente monta
+  useEffect(() => {
+    const fetchLoja = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const { data } = await axios.get("/api/commerces/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setLogoUrl(data.logoUrl); // campo retornado pelo backend
+        setNomeLoja(data.nome);
+      } catch (err) {
+        console.error("Erro ao carregar dados da loja:", err);
+      }
+    };
+    fetchLoja();
+  }, []);
 
   return (
     <div
@@ -26,8 +44,14 @@ export default function LojaDashboard() {
       <div className="w-full max-w-4xl relative flex items-center justify-center mb-6">
         <div className="relative group">
           <img
-            src="https://superberton.com.br/wp-content/uploads/2017/04/logo.png"
-            alt="Logo da Loja"
+            src={
+              logoUrl
+                ? logoUrl.startsWith("http")
+                  ? logoUrl
+                  : `http://localhost:4000/uploads/${logoUrl}`
+                : "https://via.placeholder.com/240?text=Sem+Logo"
+            }
+            alt={nomeLoja || "Logo da Loja"}
             className="rounded-2xl w-60 h-60 object-contain bg-white p-4 shadow-xl transition-transform duration-300 group-hover:scale-105"
           />
           <button className="absolute bottom-2 right-2 p-2 bg-white/80 rounded-full shadow hover:scale-110 transition">
@@ -38,7 +62,7 @@ export default function LojaDashboard() {
 
       {/* Título */}
       <h1 className="text-4xl font-extrabold mb-4 text-zinc-800 text-center tracking-tight">
-        Painel da Loja
+        Painel da Loja {nomeLoja && `- ${nomeLoja}`}
       </h1>
 
       {/* Abas com animação */}
@@ -61,7 +85,6 @@ export default function LojaDashboard() {
           icon={<FiEdit />}
           texto="Editar Loja"
         />
-        {/* Removida a aba Mensagens */}
         <AbaBotao
           ativa={abaSelecionada === "batepapo"}
           onClick={() => setAbaSelecionada("batepapo")}
@@ -105,15 +128,16 @@ function AdicionarProduto() {
   const [quantidade, setQuantidade] = useState("");
   const [codigoBarras, setCodigoBarras] = useState("");
   const [mensagem, setMensagem] = useState("");
+  const [foto, setFoto] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensagem("");
-
     const token = localStorage.getItem("token");
 
     try {
-      await axios.post(
+      // 1) Cria o produto
+      const res = await axios.post(
         "http://localhost:4000/api/products",
         {
           nome,
@@ -131,8 +155,27 @@ function AdicionarProduto() {
           },
         }
       );
+      const produtoId = res.data.id; // ajuste conforme seu backend
+
+      // 2) Se veio foto, envia pelo endpoint de upload
+      if (foto) {
+        const formData = new FormData();
+        formData.append("foto", foto);
+
+        await axios.post(
+          `http://localhost:4000/api/upload/${produtoId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
 
       setMensagem("Produto cadastrado com sucesso!");
+      // limpa campos...
       setNome("");
       setPreco("");
       setCategoria("");
@@ -140,9 +183,10 @@ function AdicionarProduto() {
       setMarca("");
       setQuantidade("");
       setCodigoBarras("");
+      setFoto(null);
     } catch (error) {
+      console.error(error);
       setMensagem("Erro ao cadastrar produto.");
-      console.error("Erro:", error);
     }
   };
 
@@ -193,6 +237,15 @@ function AdicionarProduto() {
         value={codigoBarras}
         onChange={(e) => setCodigoBarras(e.target.value)}
       />
+      <label className="flex flex-col">
+        Foto do Produto
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setFoto(e.target.files[0])}
+          className="mt-1"
+        />
+      </label>
 
       <button
         type="submit"
