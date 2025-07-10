@@ -37,8 +37,7 @@ export default function LojaDashboard() {
 
   return (
     <div
-      className="min-h-screen p-6 flex flex-col items-center transition-all duration-500"
-      style={{ background: "linear-gradient(to bottom, #d4f7d4, #ffffff)" }}
+      className="min-h-screen flex flex-col items-center transition-all duration-500 bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white p-16 px-6"
     >
       {/* Logo da Loja */}
       <div className="w-full max-w-4xl relative flex items-center justify-center mb-6">
