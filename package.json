@@ -11,20 +11,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.1.1",
     "@tailwindcss/vite": "^4.1.5",
     "axios": "^1.9.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
+    "date-fns": "^2.30.0",
     "express": "^5.1.0",
     "framer-motion": "^12.19.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-icons": "^5.5.0",
+    "react-icons": "^4.12.0",
     "react-router-dom": "^7.6.3",
     "tailwindcss": "^4.1.5",
-    "Vite": "npm:vite@^6.3.5"
+    "uuid": "^9.0.1",
+    "Vite": "npm:vite@^6.3.5",
+    "wavesurfer.js": "^7.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

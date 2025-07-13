@@ -185,7 +185,11 @@ function ContatoLoja() {
                     />
                   )}
                   {msg.tipo === "audio" && (
-                    <audio controls src={msg.audioURL} className="w-full mt-1" />
+                    <audio
+                      controls
+                      src={msg.audioURL}
+                      className="w-full mt-1"
+                    />
                   )}
                 </div>
               </div>

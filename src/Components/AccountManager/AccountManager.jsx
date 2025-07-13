@@ -14,12 +14,10 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
-
 function validateEmail(email) {
   // Regex básica para email
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-
 
 function formatPhone(value) {
   // Formata telefone no padrão (XX) XXXXX-XXXX
@@ -32,7 +30,6 @@ function formatPhone(value) {
   return value;
 }
 
-
 export default function AccountManagerPage() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -42,7 +39,6 @@ export default function AccountManagerPage() {
     cidade: "",
   });
 
-
   const [originalData, setOriginalData] = useState(null);
   const [saved, setSaved] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -50,19 +46,14 @@ export default function AccountManagerPage() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
-
-  const hasChanges =
-    JSON.stringify(formData) !== JSON.stringify(originalData);
-
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(originalData);
 
   // Validações
   const isEmailValid = validateEmail(formData.email);
   const isNomeValid = formData.nome.trim().length > 0;
   const isTelefoneValid = formData.telefone.trim().length >= 13; // ex: (12) 34567-8901
 
-
   const isFormValid = isEmailValid && isNomeValid && isTelefoneValid;
-
 
   // Para confirmar saída com alterações
   const beforeUnloadListener = (event) => {
@@ -72,7 +63,6 @@ export default function AccountManagerPage() {
     }
   };
 
-
   useEffect(() => {
     window.addEventListener("beforeunload", beforeUnloadListener);
     return () => {
@@ -80,12 +70,10 @@ export default function AccountManagerPage() {
     };
   }, [hasChanges]);
 
-
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
-
 
       try {
         const { data } = await axios.get("/api/auth/me", {
@@ -111,10 +99,8 @@ export default function AccountManagerPage() {
     fetchUser();
   }, []);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-
 
     if (name === "telefone") {
       setFormData((f) => ({ ...f, telefone: formatPhone(value) }));
@@ -122,7 +108,6 @@ export default function AccountManagerPage() {
       setFormData((f) => ({ ...f, [name]: value }));
     }
   };
-
 
   const handleSave = async () => {
     if (!isFormValid) {
@@ -148,13 +133,10 @@ export default function AccountManagerPage() {
     }
   };
 
-
   const handleCancel = () => {
     if (hasChanges) {
       if (
-        window.confirm(
-          "Você tem alterações não salvas. Deseja descartá-las?"
-        )
+        window.confirm("Você tem alterações não salvas. Deseja descartá-las?")
       ) {
         setFormData(originalData);
         setIsEditing(false);
@@ -166,7 +148,6 @@ export default function AccountManagerPage() {
     }
   };
 
-
   // Avatar simples com iniciais
   const Avatar = ({ name }) => {
     const initials = name
@@ -177,7 +158,6 @@ export default function AccountManagerPage() {
           .toUpperCase()
       : "US";
 
-
     return (
       <div className="w-24 h-24 rounded-full bg-[#1565C0] flex items-center justify-center text-white text-3xl font-bold select-none shadow-lg">
         {initials}
@@ -185,13 +165,11 @@ export default function AccountManagerPage() {
     );
   };
 
-
   // Formatação data fictícia última atualização
   const lastUpdated = new Date(Date.now() - 86400000 * 3).toLocaleDateString(
     "pt-BR",
     { day: "2-digit", month: "long", year: "numeric" }
   );
-
 
   if (!user)
     return (
@@ -199,7 +177,6 @@ export default function AccountManagerPage() {
         Carregando perfil...
       </div>
     );
-
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white flex items-center justify-center px-4 py-12">
@@ -212,7 +189,6 @@ export default function AccountManagerPage() {
         {/* AVATAR e Botões editar */}
         <div className="flex items-center justify-between mb-8">
           <Avatar name={formData.nome} />
-
 
           <div className="flex gap-4">
             {!isEditing && (
@@ -259,7 +235,6 @@ export default function AccountManagerPage() {
             )}
           </div>
         </div>
-
 
         {/* Form */}
         <form
@@ -313,12 +288,10 @@ export default function AccountManagerPage() {
             disabled={!isEditing}
           />
 
-
           {/* Última atualização */}
           <p className="text-sm text-gray-500 select-text italic">
             Última atualização do perfil: <strong>{lastUpdated}</strong>
           </p>
-
 
           {/* Botão alterar senha */}
           <button
@@ -331,7 +304,6 @@ export default function AccountManagerPage() {
             <FiLock />
             Alterar Senha
           </button>
-
 
           {/* Área alterar senha */}
           <AnimatePresence>
@@ -348,7 +320,6 @@ export default function AccountManagerPage() {
             )}
           </AnimatePresence>
         </form>
-
 
         {/* Notificações */}
         <AnimatePresence>
@@ -369,7 +340,6 @@ export default function AccountManagerPage() {
         </AnimatePresence>
       </motion.div>
 
-
       {/* Loader style */}
       <style>{`
         .loader {
@@ -384,7 +354,6 @@ export default function AccountManagerPage() {
     </main>
   );
 }
-
 
 // Campo com validação e ícone
 function Field({
@@ -442,7 +411,6 @@ function Field({
   );
 }
 
-
 // Toast / Notificação estilizada
 function Toast({ type = "success", message, onClose }) {
   return (
@@ -474,7 +442,6 @@ function Toast({ type = "success", message, onClose }) {
   );
 }
 
-
 // Formulário simulado para alteração de senha (só UI)
 function ChangePasswordForm() {
   const [currentPass, setCurrentPass] = useState("");
@@ -483,34 +450,55 @@ function ChangePasswordForm() {
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
   const canSubmit =
     currentPass.length >= 6 &&
     newPass.length >= 6 &&
     newPass === confirmNewPass;
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!canSubmit) {
       setMsg({ type: "error", text: "Preencha os campos corretamente." });
       return;
     }
+
     setLoading(true);
     setMsg(null);
-    // Simular API call
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.put(
+        "/api/auth/change-password",
+        {
+          senhaAtual: currentPass,
+          novaSenha: newPass,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       setMsg({ type: "success", text: "Senha alterada com sucesso!" });
       setCurrentPass("");
       setNewPass("");
       setConfirmNewPass("");
-    }, 2000);
+    } catch (error) {
+      setMsg({
+        type: "error",
+        text:
+          error.response?.data?.message || "Erro ao tentar alterar a senha.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mt-4" aria-label="Alterar senha">
+    <div className="space-y-4 mt-4" aria-label="Alterar senha">
       <div>
         <label htmlFor="currentPass" className="block text-sm font-medium mb-1">
           Senha Atual
@@ -538,7 +526,10 @@ function ChangePasswordForm() {
         />
       </div>
       <div>
-        <label htmlFor="confirmNewPass" className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="confirmNewPass"
+          className="block text-sm font-medium mb-1"
+        >
           Confirmar Nova Senha
         </label>
         <input
@@ -551,10 +542,10 @@ function ChangePasswordForm() {
         />
       </div>
 
-
       <button
-        type="submit"
+        type="button"
         disabled={!canSubmit || loading}
+        onClick={handleSubmit}
         className={`w-full py-3 rounded-lg font-semibold text-white transition ${
           canSubmit && !loading
             ? "bg-[#1565C0] hover:bg-[#0D47A1]"
@@ -564,6 +555,13 @@ function ChangePasswordForm() {
         {loading ? "Salvando..." : "Alterar Senha"}
       </button>
 
+      {/* Dica de validação */}
+      {!canSubmit && !loading && (
+        <p className="mt-2 text-sm text-red-600 text-center font-semibold">
+          Preencha todos os campos corretamente. A nova senha precisa ter no
+          mínimo 6 caracteres e coincidir com a confirmação.
+        </p>
+      )}
 
       {msg && (
         <p
@@ -574,6 +572,6 @@ function ChangePasswordForm() {
           {msg.text}
         </p>
       )}
-    </form>
+    </div>
   );
 }
