@@ -75,7 +75,7 @@ export default function ProductPage() {
       <div className="p-6 max-w-7xl mx-auto text-red-500">
         {error}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => window.history.back()}
           className="mt-4 inline-flex items-center gap-2 text-gray-700 hover:text-gray-900"
         >
           <FaArrowLeft /> Voltar
@@ -203,13 +203,14 @@ export default function ProductPage() {
 
           <div className="flex gap-4 mt-auto">
             <button
-          onClick={() =>
-           (window.location.href = `tel:${product.comercio.telefone}`)
-         }
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-red-600"
-            type="button"
+              onClick={() =>
+                (window.location.href = `tel:${product.comercio.telefone}`)
+              }
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-red-600"
+              type="button"
             >
-            📞 Entrar em contato com a loja – {product.comercio?.nome || "Loja"}
+              📞 Entrar em contato com a loja –{" "}
+              {product.comercio?.nome || "Loja"}
             </button>
             {product.barcode && (
               <button
@@ -263,7 +264,22 @@ export default function ProductPage() {
         <h3 className="text-2xl font-semibold mb-6 select-none">
           Avaliações dos clientes
         </h3>
-        <p className="text-gray-500">Nenhuma avaliação disponível.</p>
+
+        {product.reviewsCount > 0 ? (
+          <div className="space-y-6">
+            {product.reviews.map((rev, i) => (
+              <div key={i} className="border-b pb-4">
+                <div className="flex items-center mb-1">
+                  {renderStars(rev.note)}
+                  <span className="ml-2 text-sm text-gray-500">{rev.user}</span>
+                </div>
+                <p className="text-gray-700">{rev.content}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">Nenhuma avaliação disponível.</p>
+        )}
       </section>
       {/* Relacionados */}
       <section className="mt-16">

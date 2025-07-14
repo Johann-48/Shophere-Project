@@ -33,6 +33,17 @@ export default function Home() {
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
+  // Converte “R$ 12,90”, “12,90”, 12.9, undefined…  →  12.9 ou NaN
+  const toNumber = (value) => {
+    if (typeof value === "number") return value;
+    if (!value) return NaN;
+    // remove tudo que NÃO é dígito, vírgula, ponto ou sinal
+    const cleaned = value
+      .toString()
+      .replace(/[^\d,.-]/g, "")
+      .replace(",", ".");
+    return parseFloat(cleaned);
+  };
   const addToCart = (product) => {
     setCart((prev) => [...prev, product]);
   };
@@ -77,6 +88,7 @@ export default function Home() {
           ? response.data
           : response.data.products;
         setProducts(data || []);
+        setAllProducts(data || []);
       } catch (err) {
         console.error(err);
         setError("Não foi possível carregar os produtos da categoria");
@@ -95,26 +107,40 @@ export default function Home() {
   const toggleFilters = () => setShowFilters((prev) => !prev);
   const applyFilters = () => {
     let filtered = [...allProducts];
-    // Filtrar por categoria antes de outros filtros
+
+    // Categoria primeiro
     if (selectedCategory !== null) {
       filtered = filtered.filter((p) => p.categoria_id === selectedCategory);
     }
+
+    // Preço mínimo e máximo
     if (minPrice)
-      filtered = filtered.filter((p) => p.price >= parseFloat(minPrice));
+      filtered = filtered.filter(
+        (p) => toNumber(p.price) >= parseFloat(minPrice)
+      );
     if (maxPrice)
-      filtered = filtered.filter((p) => p.price <= parseFloat(maxPrice));
-    if (minRating)
-      filtered = filtered.filter((p) => p.rating >= parseFloat(minRating));
+      filtered = filtered.filter(
+        (p) => toNumber(p.price) <= parseFloat(maxPrice)
+      );
+
+    // Avaliação mínima
+    if (minRating) {
+      const min = parseFloat(minRating);
+      filtered = filtered.filter((p) => p.avgRating >= min);
+    }
+    // Ordenação
     if (sortOption === "high") {
-      filtered.sort((a, b) => b.price - a.price);
+      filtered.sort((a, b) => toNumber(b.price) - toNumber(a.price));
     } else if (sortOption === "low") {
-      filtered.sort((a, b) => a.price - b.price);
+      filtered.sort((a, b) => toNumber(a.price) - toNumber(b.price));
     } else if (sortOption === "bestseller") {
       filtered.sort((a, b) => (b.sales || 0) - (a.sales || 0));
     }
+
     setProducts(filtered);
     setShowFilters(false);
   };
+
   return (
     <div
       className="min-h-screen font-sans text-gray-900"
@@ -308,6 +334,7 @@ text-gray-600 flex items-center gap-1"
 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
+
                 <div className="flex flex-col">
                   <label
                     className="mb-1 text-sm font-medium
@@ -362,7 +389,6 @@ gap-6"
               key={product.id}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => handleProductClick(product.id)}
               className="cursor-pointer"
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
