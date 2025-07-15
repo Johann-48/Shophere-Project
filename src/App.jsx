@@ -17,6 +17,7 @@ import CommerceSearchPage from "./Pages/CommerceSearchPage";
 import LojaDashboardPage from "./Pages/LojaDashboardPage";
 import NotFoundPage from "./Pages/NotFoundPage";
 
+import Review from "./Components/Review"; // 👈 Aqui
 import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
       <Route path="/search" element={<ProductSearchPage />} />
       <Route path="/commerce/:id" element={<CommercePage />} />
       <Route path="/commerces/search" element={<CommerceSearchPage />} />
+      <Route path="/review" element={<Review />} /> {/* 👈 Aqui */}
 
       {/* rota só para usuários “user” */}
       <Route element={<ProtectedRoute requiredRole="user" />}>
