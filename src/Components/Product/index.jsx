@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import {
   FaTruck,
@@ -260,10 +261,18 @@ export default function ProductPage() {
         </div>
       </div>
       {/* Avaliações */}
+
       <section className="mt-16">
-        <h3 className="text-2xl font-semibold mb-6 select-none">
-          Avaliações dos clientes
-        </h3>
+        <div className="flex items-center justify-between mb-6 select-none">
+          <h3 className="text-2xl font-semibold">Avaliações dos clientes</h3>
+          {/* Botão para escrever avaliação */}
+          <Link
+            to={`/review/${product.id}`}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            Escreva uma avaliação
+          </Link>
+        </div>
 
         {product.reviewsCount > 0 ? (
           <div className="space-y-6">
@@ -278,7 +287,16 @@ export default function ProductPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">Nenhuma avaliação disponível.</p>
+          <div className="flex flex-col items-center space-y-4">
+            <p className="text-gray-500">Nenhuma avaliação disponível.</p>
+            {/* Também podemos sugerir escrever a primeira avaliação aqui */}
+            <Link
+              to={`/review/${product.id}`}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Seja o primeiro a avaliar
+            </Link>
+          </div>
         )}
       </section>
       {/* Relacionados */}
