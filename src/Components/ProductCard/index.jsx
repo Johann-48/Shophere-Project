@@ -42,7 +42,13 @@ export default function ProductCard({
         className="bg-white rounded-2xl shadow-lg p-4 relative flex flex-col hover:ring-2 hover:ring-red-300 transition"
       >
         <img
-          src={product.mainImage || product.image || "/assets/placeholder.png"}
+          src={
+            product.mainImage ||
+            (Array.isArray(product.thumbnails) && product.thumbnails[0]) ||
+            product.image ||
+            product.fotos ||
+            "/assets/placeholder.png"
+          }
           alt={product.title || product.name}
           className="w-full h-32 object-contain mb-3"
         />

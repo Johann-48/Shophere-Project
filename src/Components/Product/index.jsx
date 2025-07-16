@@ -12,6 +12,8 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 
+import ProductCard from "../ProductCard";
+
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export default function ProductPage() {
   const [favorited, setFavorited] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -31,6 +34,29 @@ export default function ProductPage() {
         const prod = res.data;
         console.log("Produto carregado:", prod); // 👈 VERIFIQUE ISSO NO CONSOLE
         setProduct(prod);
+        if (prod.categoria_id) {
+          try {
+            const resRel = await axios.get(
+              `/api/products/categoria/${prod.categoria_id}`
+            );
+            const related = Array.isArray(resRel.data)
+              ? resRel.data
+              : resRel.data.products || [];
+
+            console.log("Produtos relacionados recebidos:", related);
+
+            // Remove o produto atual da lista
+            const filtered = related.filter((p) => p.id !== prod.id);
+            console.log(
+              "Produtos relacionados filtrados e limitados:",
+              filtered.slice(0, 4)
+            );
+
+            setRelatedProducts(filtered.slice(0, 4));
+          } catch (err) {
+            console.error("Erro ao carregar produtos relacionados", err);
+          }
+        }
         setMainImage(prod.mainImage || "/assets/placeholder.png");
         setThumbnails(prod.thumbnails || []);
         setQuantity(1);
@@ -305,7 +331,19 @@ export default function ProductPage() {
           Produtos relacionados
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-          <p className="text-gray-500">Sem produtos relacionados.</p>
+          {relatedProducts.length > 0 ? (
+            relatedProducts.map((product) => (
+              <ProductCard
+                key={`rel-${product.id}`}
+                product={product}
+                isLiked={false} // ou ajuste se quiser controle
+                onToggleLike={() => {}} // pode ser vazio ou implementar lógica
+                onAddToCart={() => {}} // idem
+              />
+            ))
+          ) : (
+            <p className="text-gray-500">Sem produtos relacionados.</p>
+          )}
         </div>
       </section>
     </div>
