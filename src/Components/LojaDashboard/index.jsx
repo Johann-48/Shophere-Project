@@ -36,9 +36,7 @@ export default function LojaDashboard() {
   }, []);
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center transition-all duration-500 bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white p-16 px-6"
-    >
+    <div className="min-h-screen flex flex-col items-center transition-all duration-500 bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white p-16 px-6">
       {/* Logo da Loja */}
       <div className="w-full max-w-4xl relative flex items-center justify-center mb-6">
         <div className="relative group">
@@ -128,6 +126,15 @@ function AdicionarProduto() {
   const [codigoBarras, setCodigoBarras] = useState("");
   const [mensagem, setMensagem] = useState("");
   const [foto, setFoto] = useState(null);
+  const [categorias, setCategorias] = useState([]);
+
+  useEffect(() => {
+    // carrega opções de categoria ao montar
+    axios
+      .get("/api/categories")
+      .then((res) => setCategorias(res.data))
+      .catch((err) => console.error("Erro ao buscar categorias:", err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -141,7 +148,7 @@ function AdicionarProduto() {
         {
           nome,
           preco,
-          categoria,
+          categoria_id: categoria, // envia o ID, não o nome
           descricao,
           marca,
           quantidade,
@@ -208,11 +215,24 @@ function AdicionarProduto() {
         onChange={(e) => setPreco(e.target.value)}
         required
       />
-      <AnimatedInput
-        placeholder="Categoria"
-        value={categoria}
-        onChange={(e) => setCategoria(e.target.value)}
-      />
+      <label className="flex flex-col">
+        Categoria
+        <select
+          value={categoria}
+          onChange={(e) => setCategoria(e.target.value)}
+          required
+          className="p-2 border rounded"
+        >
+          <option value="" disabled>
+            — Selecione —
+          </option>
+          {categorias.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.nome}
+            </option>
+          ))}
+        </select>
+      </label>
       <AnimatedTextarea
         placeholder="Descrição"
         value={descricao}
@@ -266,8 +286,13 @@ function MeusProdutos() {
   const [produtos, setProdutos] = useState([]);
   const [produtoEditandoId, setProdutoEditandoId] = useState(null);
   const [produtoEditando, setProdutoEditando] = useState(null);
+  const [categorias, setCategorias] = useState([]);
 
   useEffect(() => {
+    axios
+      .get("/api/categories")
+      .then((res) => setCategorias(res.data))
+      .catch(console.error);
     const fetchProdutos = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -284,7 +309,10 @@ function MeusProdutos() {
 
   function iniciarEdicao(produto) {
     setProdutoEditandoId(produto.id);
-    setProdutoEditando({ ...produto });
+    setProdutoEditando({
+      ...produto,
+      categoria_id: produto.categoria_id || "", // ensure the field exists
+    });
   }
 
   function cancelarEdicao() {
@@ -382,13 +410,25 @@ function MeusProdutos() {
                     placeholder="Preço"
                     required
                   />
-                  <input
-                    className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    name="categoria"
-                    value={produtoEditando.categoria}
-                    onChange={handleEditChange}
-                    placeholder="Categoria"
-                  />
+                  <label className="flex flex-col">
+                    Categoria
+                    <select
+                      name="categoria_id"
+                      value={produtoEditando.categoria_id || ""}
+                      onChange={handleEditChange}
+                      required
+                      className="p-2 border rounded"
+                    >
+                      <option value="" disabled>
+                        — Selecione —
+                      </option>
+                      {categorias.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                   <input
                     className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     name="imagem"

@@ -43,10 +43,11 @@ export default function ProductCard({
       >
         <img
           src={
+            // 1) campo principal que sua API realmente retorna
             product.mainImage ||
+            // 2) se houver array de miniaturas, usa a primeira
             (Array.isArray(product.thumbnails) && product.thumbnails[0]) ||
-            product.image ||
-            product.fotos ||
+            // 3) se mesmo assim nada existir, placeholder
             "/assets/placeholder.png"
           }
           alt={product.title || product.name}
