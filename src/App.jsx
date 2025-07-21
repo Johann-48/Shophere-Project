@@ -27,7 +27,6 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/contact" element={<ContactSellerPage />} />
       <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
       <Route path="/produto/:id" element={<ProductPage />} />
       <Route path="/seller" element={<SellerPage />} />
@@ -38,13 +37,17 @@ function App() {
       <Route path="/commerce/:id" element={<CommercePage />} />
       <Route path="/commerces/search" element={<CommerceSearchPage />} />
 
+      {/* rota só para usuários “user” */}
       <Route element={<ProtectedRoute requiredRole="user" />}>
         <Route path="/review/:id" element={<ReviewPage />} />
       </Route>
 
-      {/* rota só para usuários “user” */}
       <Route element={<ProtectedRoute requiredRole="user" />}>
         <Route path="/accountmanager" element={<AccountManagerPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute requiredRole="user" />}>
+        <Route path="/contact" element={<ContactSellerPage />} />
       </Route>
 
       {/* rota só para “commerce” */}

@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import {
   FiPlusCircle,
   FiEdit,
@@ -334,9 +334,14 @@ function MeusProdutos() {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`/api/products/${produtoEditando.id}`, produtoEditando, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `/api/products/${produtoEditando.id}`,
+        {
+          ...produtoEditando,
+          categoria_id: produtoEditando.categoria_id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       setProdutos((prev) =>
         prev.map((p) => (p.id === produtoEditandoId ? produtoEditando : p))
@@ -631,44 +636,9 @@ function EditarLoja() {
 
 function BatePapo() {
   // Estado clientes e mensagens
-  const [clientes, setClientes] = useState([
-    {
-      id: 1,
-      nome: "João Silva",
-      mensagens: [
-        {
-          id: 1,
-          tipo: "texto",
-          texto: "Olá, o produto X está disponível?",
-          deCliente: true,
-        },
-        {
-          id: 2,
-          tipo: "texto",
-          texto: "Sim, temos em estoque.",
-          deCliente: false,
-        },
-      ],
-    },
-    {
-      id: 2,
-      nome: "Maria Oliveira",
-      mensagens: [
-        {
-          id: 1,
-          tipo: "texto",
-          texto: "Qual o prazo de entrega?",
-          deCliente: true,
-        },
-        {
-          id: 2,
-          tipo: "texto",
-          texto: "Normalmente 3 a 5 dias úteis.",
-          deCliente: false,
-        },
-      ],
-    },
-  ]);
+  const [clientes, setClientes] = useState([]); // virá da API
+  const [chatId, setChatId] = useState(null); // id do chat selecionado
+
   const [clienteSelecionado, setClienteSelecionado] = useState(clientes[0]);
   const [novaMensagem, setNovaMensagem] = useState("");
   const [imagemParaEnviar, setImagemParaEnviar] = useState(null);
@@ -676,6 +646,36 @@ function BatePapo() {
   const [audioURL, setAudioURL] = useState(null);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
+
+  useEffect(() => {
+    console.log("Clientes carregados:", clientes);
+    async function loadChats() {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) throw new Error("Usuário não encontrado no localStorage");
+        const lojaId = user.id;
+
+        const res = await axios.get("/api/chats", {
+          params: { lojaId },
+        });
+
+        const chats = await Promise.all(
+          res.data.map(async (chat) => {
+            return {
+              id: chat.id,
+              nome: `Cliente ${chat.cliente_id}`,
+              mensagens: [],
+            };
+          })
+        );
+        setClientes(chats);
+        if (chats.length) setClienteSelecionado(chats[0]);
+      } catch (err) {
+        console.error("Erro ao carregar chats:", err);
+      }
+    }
+    loadChats();
+  }, []);
 
   // Atualizar cliente selecionado no array clientes
   function atualizarClienteAtualizado(clienteAtualizado) {
@@ -686,47 +686,46 @@ function BatePapo() {
   }
 
   // Enviar mensagem texto
-  function enviarMensagemTexto(e) {
+  async function enviarMensagemTexto(e) {
     e.preventDefault();
-    if (!novaMensagem.trim()) return;
-
-    const novaMsg = {
-      id: Date.now(),
+    if (!novaMensagem.trim() || !chatId) return;
+    const payload = {
+      remetente: "loja",
       tipo: "texto",
-      texto: novaMensagem.trim(),
-      deCliente: false,
+      conteudo: novaMensagem.trim(),
     };
-
-    const clienteAtualizado = {
-      ...clienteSelecionado,
-      mensagens: [...clienteSelecionado.mensagens, novaMsg],
-    };
-    atualizarClienteAtualizado(clienteAtualizado);
-    setNovaMensagem("");
+    try {
+      await axios.post(`/api/chats/${chatId}/mensagens`, payload);
+      // refaz o fetch das mensagens
+      const res = await axios.get(`/api/chats/${chatId}/mensagens`);
+      atualizarClienteAtualizado({
+        ...clienteSelecionado,
+        mensagens: res.data,
+      });
+      setNovaMensagem("");
+    } catch (err) {
+      console.error("Erro ao enviar texto:", err);
+    }
   }
 
   // Enviar imagem
-  function enviarImagem(e) {
+  async function enviarImagem(e) {
     const file = e.target.files[0];
-    if (!file) return;
-
-    // Gerar URL para preview e salvar no estado
+    if (!file || !chatId) return;
+    // aqui você faz upload se tiver endpoint; senão usa createObjectURL:
     const url = URL.createObjectURL(file);
-
-    const novaMsg = {
-      id: Date.now(),
-      tipo: "imagem",
-      imagemURL: url,
-      file,
-      deCliente: false,
-    };
-
-    const clienteAtualizado = {
-      ...clienteSelecionado,
-      mensagens: [...clienteSelecionado.mensagens, novaMsg],
-    };
-    atualizarClienteAtualizado(clienteAtualizado);
-    e.target.value = null; // reset input
+    const payload = { remetente: "loja", tipo: "imagem", conteudo: url };
+    try {
+      await axios.post(`/api/chats/${chatId}/mensagens`, payload);
+      const res = await axios.get(`/api/chats/${chatId}/mensagens`);
+      atualizarClienteAtualizado({
+        ...clienteSelecionado,
+        mensagens: res.data,
+      });
+    } catch (err) {
+      console.error("Erro ao enviar imagem:", err);
+    }
+    e.target.value = null;
   }
 
   // Gravação áudio
@@ -741,25 +740,17 @@ function BatePapo() {
       mediaRecorderRef.current.ondataavailable = (e) => {
         chunksRef.current.push(e.data);
       };
-      mediaRecorderRef.current.onstop = () => {
+      mediaRecorderRef.current.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         chunksRef.current = [];
         const url = URL.createObjectURL(blob);
-        setAudioURL(url);
-
-        const novaMsg = {
-          id: Date.now(),
-          tipo: "audio",
-          audioBlob: blob,
-          audioURL: url,
-          deCliente: false,
-        };
-
-        const clienteAtualizado = {
+        const payload = { remetente: "loja", tipo: "audio", conteudo: url };
+        await axios.post(`/api/chats/${chatId}/mensagens`, payload);
+        const res = await axios.get(`/api/chats/${chatId}/mensagens`);
+        atualizarClienteAtualizado({
           ...clienteSelecionado,
-          mensagens: [...clienteSelecionado.mensagens, novaMsg],
-        };
-        atualizarClienteAtualizado(clienteAtualizado);
+          mensagens: res.data,
+        });
         setGravando(false);
       };
       mediaRecorderRef.current.start();
@@ -780,19 +771,29 @@ function BatePapo() {
       {/* Lista clientes */}
       <div className="md:w-1/3 bg-gray-100 rounded-lg p-4 overflow-y-auto shadow">
         <h2 className="text-xl font-semibold mb-4">Clientes</h2>
-        {clientes.map((cliente) => (
-          <button
-            key={cliente.id}
-            onClick={() => setClienteSelecionado(cliente)}
-            className={`w-full text-left px-4 py-2 rounded mb-2 transition ${
-              clienteSelecionado?.id === cliente.id
-                ? "bg-blue-600 text-white"
-                : "hover:bg-blue-100"
-            }`}
-          >
-            {cliente.nome}
-          </button>
-        ))}
+        {clientes
+          .filter((cliente) => cliente && cliente.id) // <- filtro de segurança
+          .map((cliente) => (
+            <button
+              key={cliente.id}
+              onClick={async () => {
+                setClienteSelecionado(cliente);
+                setChatId(cliente.id);
+                // buscar mensagens via API:
+                const res = await axios.get(
+                  `/api/chats/${cliente.id}/mensagens`
+                );
+                atualizarClienteAtualizado({ ...cliente, mensagens: res.data });
+              }}
+              className={`w-full text-left px-4 py-2 rounded mb-2 transition ${
+                clienteSelecionado?.id === cliente.id
+                  ? "bg-blue-600 text-white"
+                  : "hover:bg-blue-100"
+              }`}
+            >
+              {cliente.nome}
+            </button>
+          ))}
       </div>
 
       {/* Conversa */}
@@ -804,11 +805,11 @@ function BatePapo() {
           className="flex-1 overflow-y-auto mb-4 flex flex-col gap-2 px-2"
           style={{ scrollbarWidth: "thin" }}
         >
-          {clienteSelecionado?.mensagens.map((msg) => {
+          {clienteSelecionado?.mensagens.map((msg, index) => {
             const isCliente = msg.deCliente;
             return (
               <div
-                key={msg.id}
+                key={msg.id || `${msg.tipo}-${index}`}
                 className={`max-w-[75%] p-3 rounded-lg whitespace-pre-wrap break-words flex flex-col ${
                   isCliente
                     ? "bg-green-200 self-start"
