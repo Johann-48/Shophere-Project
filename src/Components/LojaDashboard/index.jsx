@@ -647,29 +647,53 @@ function BatePapo() {
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
 
+  // Função para buscar mensagens de um chat
+  async function fetchMensagens(id) {
+    try {
+      const res = await axios.get(`/api/chats/${id}/mensagens`);
+      return res.data;
+    } catch (err) {
+      console.error("Erro ao buscar mensagens:", err);
+      return [];
+    }
+  }
+
   useEffect(() => {
-    console.log("Clientes carregados:", clientes);
     async function loadChats() {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) throw new Error("Usuário não encontrado no localStorage");
+        if (!user) throw new Error("Usuário não encontrado");
         const lojaId = user.id;
 
-        const res = await axios.get("/api/chats", {
-          params: { lojaId },
-        });
+        // 1) pega lista de clientes que já conversaram (sem chat.id):
+        const res = await axios.get("/api/chats", { params: { lojaId } });
+        const summaries = res.data; // cada { cliente_id, cliente_nome, … }
 
+        // 2) para cada summary, chama getOrCreateChat para obter o chat real:
         const chats = await Promise.all(
-          res.data.map(async (chat) => {
+          summaries.map(async (s) => {
+            // retorna { id, cliente_id, loja_id } do chat
+            const chatRes = await axios.get("/api/chats", {
+              params: { clienteId: s.cliente_id, lojaId },
+            });
+            const chatId = chatRes.data.id;
+
+            // 3) busca mensagens usando o chat real
+            const msgsRes = await axios.get(`/api/chats/${chatId}/mensagens`);
+
             return {
-              id: chat.id,
-              nome: `Cliente ${chat.cliente_id}`,
-              mensagens: [],
+              id: chatId,
+              nome: s.cliente_nome,
+              mensagens: msgsRes.data,
             };
           })
         );
+
         setClientes(chats);
-        if (chats.length) setClienteSelecionado(chats[0]);
+        if (chats.length) {
+          setClienteSelecionado(chats[0]);
+          setChatId(chats[0].id);
+        }
       } catch (err) {
         console.error("Erro ao carregar chats:", err);
       }
@@ -777,13 +801,26 @@ function BatePapo() {
             <button
               key={cliente.id}
               onClick={async () => {
-                setClienteSelecionado(cliente);
-                setChatId(cliente.id);
-                // buscar mensagens via API:
-                const res = await axios.get(
-                  `/api/chats/${cliente.id}/mensagens`
+                // recupera aqui mesmo o user do localStorage
+                const user = JSON.parse(localStorage.getItem("user"));
+                const lojaId = user.id;
+
+                // obtem (ou cria) o chat correto
+                const chatRes = await axios.get("/api/chats", {
+                  params: { clienteId: cliente.id, lojaId },
+                });
+                const chatId = chatRes.data.id;
+                setChatId(chatId);
+
+                // busca as mensagens
+                const msgsRes = await axios.get(
+                  `/api/chats/${chatId}/mensagens`
                 );
-                atualizarClienteAtualizado({ ...cliente, mensagens: res.data });
+                atualizarClienteAtualizado({
+                  ...cliente,
+                  id: chatId,
+                  mensagens: msgsRes.data,
+                });
               }}
               className={`w-full text-left px-4 py-2 rounded mb-2 transition ${
                 clienteSelecionado?.id === cliente.id
@@ -806,10 +843,23 @@ function BatePapo() {
           style={{ scrollbarWidth: "thin" }}
         >
           {clienteSelecionado?.mensagens.map((msg, index) => {
-            const isCliente = msg.deCliente;
+            // 1) quem é o cliente?
+            const isCliente = msg.remetente === "cliente";
+
+            // 2) prepara a url de mídia (imagem ou áudio)
+            let mediaSrc = msg.conteudo;
+            if (msg.tipo === "audio" && !mediaSrc.startsWith("blob:")) {
+              // se o backend guardou apenas o filename em conteudo,
+              // monte a URL completa. Se já for "/uploads/...",
+              // use diretamente:
+              mediaSrc = mediaSrc.startsWith("/")
+                ? `http://localhost:4000${mediaSrc}`
+                : `http://localhost:4000/uploads/audios/${mediaSrc}`;
+            }
+
             return (
               <div
-                key={msg.id || `${msg.tipo}-${index}`}
+                key={msg.id ?? `${msg.tipo}-${index}`}
                 className={`max-w-[75%] p-3 rounded-lg whitespace-pre-wrap break-words flex flex-col ${
                   isCliente
                     ? "bg-green-200 self-start"
@@ -817,21 +867,22 @@ function BatePapo() {
                 }`}
                 style={{ alignSelf: isCliente ? "flex-start" : "flex-end" }}
               >
-                {msg.tipo === "texto" && <span>{msg.texto}</span>}
+                {/* Texto (sempre usa msg.conteudo) */}
+                {msg.tipo === "texto" && <span>{msg.conteudo}</span>}
+
+                {/* Imagem */}
                 {msg.tipo === "imagem" && (
                   <img
-                    src={msg.imagemURL}
+                    src={msg.conteudo}
                     alt="imagem enviada"
                     className="max-w-xs rounded cursor-pointer hover:brightness-90 transition"
-                    onClick={() => window.open(msg.imagemURL, "_blank")}
+                    onClick={() => window.open(msg.conteudo, "_blank")}
                   />
                 )}
+
+                {/* Áudio */}
                 {msg.tipo === "audio" && (
-                  <audio
-                    controls
-                    src={msg.audioURL}
-                    className="max-w-xs rounded"
-                  />
+                  <audio controls src={mediaSrc} className="max-w-xs rounded" />
                 )}
               </div>
             );

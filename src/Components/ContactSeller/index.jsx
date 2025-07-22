@@ -33,7 +33,7 @@ export default function ContatoLoja() {
         const lojasComChat = res.data.map((chat) => ({
           id: chat.loja_id,
           nome: chat.loja_nome,
-          foto: chat.foto_perfil,
+          imagem: chat.foto_perfil, // ← renomeia para “imagem”
         }));
 
         setLojas(lojasComChat);
@@ -237,7 +237,16 @@ export default function ContatoLoja() {
                       {msg.tipo === "audio" && (
                         <audio
                           controls
-                          src={`http://localhost:4000/uploads/audios/${msg.conteudo}`}
+                          src={
+                            // 1) blob URLs (temporárias no navegador) devem ser usadas “in-loco”
+                            msg.conteudo.startsWith("blob:")
+                              ? msg.conteudo
+                              : // 2) caminhos vindos do seu backend já começam com “/uploads”
+                              msg.conteudo.startsWith("/")
+                              ? `http://localhost:4000${msg.conteudo}`
+                              : // 3) casos “exóticos”, aceita direto
+                                msg.conteudo
+                          }
                         />
                       )}
                     </div>
