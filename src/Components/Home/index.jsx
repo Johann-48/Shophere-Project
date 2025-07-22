@@ -11,6 +11,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "../ProductCard";
 import CommerceCard from "../CommerceCard";
+
+
 export default function Home() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -22,34 +24,41 @@ export default function Home() {
   const [cart, setCart] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [commerces, setCommerces] = useState([]);
-  // Filtros
+  const [showAllCommerces, setShowAllCommerces] = useState(false);
+
+
   const [sortOption, setSortOption] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minRating, setMinRating] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+
   const toggleLike = (id) => {
     setLiked((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
-  // Converte “R$ 12,90”, “12,90”, 12.9, undefined…  →  12.9 ou NaN
+
+
   const toNumber = (value) => {
     if (typeof value === "number") return value;
     if (!value) return NaN;
-    // remove tudo que NÃO é dígito, vírgula, ponto ou sinal
-    const cleaned = value
-      .toString()
-      .replace(/[^\d,.-]/g, "")
-      .replace(",", ".");
+    const cleaned = value.toString().replace(/[^\d,.-]/g, "").replace(",", ".");
     return parseFloat(cleaned);
   };
+
+
   const addToCart = (product) => {
     setCart((prev) => [...prev, product]);
   };
+
+
   const removeFromCart = (index) => {
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
+
+
   useEffect(() => {
     async function fetchInitialData() {
       try {
@@ -72,6 +81,8 @@ export default function Home() {
     }
     fetchInitialData();
   }, []);
+
+
   useEffect(() => {
     async function fetchProductsByCategory() {
       if (selectedCategory === null) {
@@ -97,23 +108,27 @@ export default function Home() {
       }
     }
     fetchProductsByCategory();
-  }, [selectedCategory]); // Removida dependência allProducts para nãosobrescrever filtros
+  }, [selectedCategory]);
+
+
   const handleCategorySelect = (id) => {
     setSelectedCategory(id);
   };
+
+
   const handleProductClick = (id) => {
     navigate(`/produto/${id}`);
   };
+
+
   const toggleFilters = () => setShowFilters((prev) => !prev);
+
+
   const applyFilters = () => {
     let filtered = [...allProducts];
-
-    // Categoria primeiro
     if (selectedCategory !== null) {
       filtered = filtered.filter((p) => p.categoria_id === selectedCategory);
     }
-
-    // Preço mínimo e máximo
     if (minPrice)
       filtered = filtered.filter(
         (p) => toNumber(p.price) >= parseFloat(minPrice)
@@ -122,13 +137,10 @@ export default function Home() {
       filtered = filtered.filter(
         (p) => toNumber(p.price) <= parseFloat(maxPrice)
       );
-
-    // Avaliação mínima
     if (minRating) {
       const min = parseFloat(minRating);
       filtered = filtered.filter((p) => p.avgRating >= min);
     }
-    // Ordenação
     if (sortOption === "high") {
       filtered.sort((a, b) => toNumber(b.price) - toNumber(a.price));
     } else if (sortOption === "low") {
@@ -136,10 +148,10 @@ export default function Home() {
     } else if (sortOption === "bestseller") {
       filtered.sort((a, b) => (b.sales || 0) - (a.sales || 0));
     }
-
     setProducts(filtered);
     setShowFilters(false);
   };
+
 
   return (
     <div
@@ -147,58 +159,50 @@ export default function Home() {
       style={{ background: "linear-gradient(to bottom, #7eaafc, #ffffff)" }}
     >
       {/* Banner */}
-      <div
-        className="w-full h-[300px] bg-cover bg-center flex
-items-center justify-center"
-        style={{ backgroundImage: 'url("/your-banner-image.jpg")' }}
-      >
-        <div
-          className="bg-black bg-opacity-70 p-10 rounded-3xl
-text-white text-center shadow-2xl backdrop-blur-md"
-        >
-          <h1 className="text-5xl font-extrabold mb-3">
-            🛍 Bem-vindo à <span className="text-blue-400">ShopHere</span>
-          </h1>
-          <p className="text-lg">
-            Ofertas imperdíveis e novidades semanais para você!
-          </p>
-        </div>
-      </div>
-      {/* Loading & Error */}
-      {loading && (
-        <div className="p-6 text-center text-gray-700">
-          Carregando produtos...
-        </div>
-      )}
-      {error && (
-        <div
-          className="p-6 text-center
-text-red-500"
-        >
-          {error}
-        </div>
-      )}
+
+
       {/* Comércios */}
       <section className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-blue-500">🏬 Comércios</h2>
           <Link
             to="/commerces/search"
-            className="text-sm text-white bg-blue-500 hover:bg-blue-600
-px-4 py-2 rounded-full transition"
+            className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-full transition"
           >
             Pesquisar Comércio
           </Link>
         </div>
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4
-gap-6"
-        >
-          {commerces.map((c) => (
-            <CommerceCard key={c.id} commerce={c} />
+
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {(showAllCommerces ? commerces : commerces.slice(0, 8)).map((c) => (
+            <motion.div
+              key={c.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 220, damping: 18 }}
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+            >
+              <CommerceCard commerce={c} />
+            </motion.div>
           ))}
         </div>
+
+
+        {commerces.length > 8 && (
+          <div className="mt-6 flex justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAllCommerces((prev) => !prev)}
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 font-semibold"
+            >
+              {showAllCommerces ? "🔼 Mostrar Menos" : "🔽 Ver Todos os Comércios"}
+            </motion.button>
+          </div>
+        )}
       </section>
+   
       {/* Categorias */}
       <section className="p-6" style={{ background: "#e3f2fd" }}>
         <h2 className="text-2xl font-bold mb-4 text-gray-900">
@@ -334,6 +338,7 @@ text-gray-600 flex items-center gap-1"
 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
+
 
                 <div className="flex flex-col">
                   <label
