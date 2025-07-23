@@ -57,9 +57,9 @@ export default function ProductCard({
           {product.title || product.name}
         </h3>
 
-        {product.comercioNome && (
+        {product.commerceName && (
           <p className="text-xs text-gray-500 mb-2">
-            Loja: <span className="font-medium">{product.comercioNome}</span>
+            Loja: <span className="font-medium">{product.commerceName}</span>
           </p>
         )}
 

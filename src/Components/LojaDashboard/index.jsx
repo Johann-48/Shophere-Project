@@ -736,11 +736,30 @@ function BatePapo() {
   async function enviarImagem(e) {
     const file = e.target.files[0];
     if (!file || !chatId) return;
-    // aqui você faz upload se tiver endpoint; senão usa createObjectURL:
-    const url = URL.createObjectURL(file);
-    const payload = { remetente: "loja", tipo: "imagem", conteudo: url };
+
     try {
+      // 1. Envia a imagem para o servidor
+      const formData = new FormData();
+      formData.append("imagem", file);
+
+      const uploadRes = await axios.post(
+        "/api/upload/image/imagem", // endpoint que criamos
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      const caminho = uploadRes.data.caminho; // exemplo: "/uploads/imagens/img_123.png"
+
+      // 2. Envia a mensagem com o caminho da imagem
+      const payload = {
+        remetente: "loja",
+        tipo: "imagem",
+        conteudo: caminho,
+      };
+
       await axios.post(`/api/chats/${chatId}/mensagens`, payload);
+
+      // 3. Atualiza a lista de mensagens
       const res = await axios.get(`/api/chats/${chatId}/mensagens`);
       atualizarClienteAtualizado({
         ...clienteSelecionado,
@@ -749,6 +768,8 @@ function BatePapo() {
     } catch (err) {
       console.error("Erro ao enviar imagem:", err);
     }
+
+    // Limpa input
     e.target.value = null;
   }
 
@@ -873,10 +894,11 @@ function BatePapo() {
                 {/* Imagem */}
                 {msg.tipo === "imagem" && (
                   <img
-                    src={msg.conteudo}
-                    alt="imagem enviada"
-                    className="max-w-xs rounded cursor-pointer hover:brightness-90 transition"
-                    onClick={() => window.open(msg.conteudo, "_blank")}
+                    src={
+                      msg.conteudo.startsWith("http")
+                        ? msg.conteudo
+                        : `http://localhost:4000${msg.conteudo}`
+                    }
                   />
                 )}
 

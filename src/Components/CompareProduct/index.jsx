@@ -13,16 +13,31 @@ const CompareProduct = () => {
 
   useEffect(() => {
     if (!codigo) return;
+    async function loadByBarcode() {
+      setLoading(true);
+      try {
+        const res = await axios.get(`/api/products/barcode/${codigo}`);
+        console.log("Resposta /api/products/barcode:", res.data);
 
-    axios
-      .get(`/api/products/barcode/${codigo}`)
-      .then((res) => {
-        setProducts(res.data);
-      })
-      .catch((err) => {
+        // Tenta várias formas de extrair o array
+        const lista = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data.products)
+          ? res.data.products
+          : Array.isArray(res.data.data)
+          ? res.data.data
+          : [];
+
+        console.log("Lista final de produtos:", lista);
+        setProducts(lista);
+      } catch (err) {
         console.error("Erro ao buscar produtos por código de barras:", err);
-      })
-      .finally(() => setLoading(false));
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadByBarcode();
   }, [codigo]);
 
   const produtoPrincipal = products[0];
@@ -38,19 +53,17 @@ const CompareProduct = () => {
         </button>
 
         {produtoPrincipal && (
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 bg-white rounded-2xl p-8 shadow-inner mb-10">
+          <div className="…">
             <img
               src={produtoPrincipal.mainImage || "/assets/placeholder.png"}
-              alt={produtoPrincipal.name}
+              alt={produtoPrincipal.title} // <- use title
               className="w-64 h-64 object-contain rounded-xl"
             />
             <div className="flex-1">
-              <h1 className="text-4xl font-extrabold text-gray-800 mb-4">
-                {produtoPrincipal.name}
+              <h1 className="text-4xl font-extrabold mb-4">
+                {produtoPrincipal.title}
               </h1>
-              <p className="text-gray-700 text-lg">
-                Comparando o mesmo produto em diferentes comércios!
-              </p>
+              …
             </div>
           </div>
         )}
@@ -62,9 +75,19 @@ const CompareProduct = () => {
           {loading ? (
             <p className="text-center text-gray-500">Carregando...</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+            <div className="grid …">
+              {products.map((p) => (
+                <ProductCard
+                  key={`${p.id}-${p.commerceId}`}
+                  product={{
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    mainImage: p.mainImage,
+                    commerceName: p.commerceName,
+                    commercePhoto: p.commercePhoto,
+                  }}
+                />
               ))}
             </div>
           )}

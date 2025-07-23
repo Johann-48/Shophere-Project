@@ -33,7 +33,7 @@ export default function ContatoLoja() {
         const lojasComChat = res.data.map((chat) => ({
           id: chat.loja_id,
           nome: chat.loja_nome,
-          imagem: chat.foto_perfil, // ← renomeia para “imagem”
+          imagem: chat.loja_foto, // <<< aqui
         }));
 
         setLojas(lojasComChat);
@@ -105,8 +105,15 @@ export default function ContatoLoja() {
   async function enviarImagem(e) {
     const file = e.target.files[0];
     if (!file || !chatId) return;
-    const url = URL.createObjectURL(file);
-    const payload = { remetente: "cliente", tipo: "imagem", conteudo: url };
+    // 1) faz upload para o servidor
+    const formData = new FormData();
+    formData.append("imagem", file);
+    const uploadRes = await axios.post("/api/upload/image/imagem", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    const caminho = uploadRes.data.caminho; // ex: "/uploads/imagens/img_123.png"
+    // 2) envia a mensagem com o caminho salvo
+    const payload = { remetente: "cliente", tipo: "imagem", conteudo: caminho };
     try {
       await axios.post(`/api/chats/${chatId}/mensagens`, payload);
       fetchMensagens(chatId);
@@ -178,11 +185,25 @@ export default function ContatoLoja() {
                     : "hover:bg-gray-100"
                 }`}
               >
-                <img
-                  src={loja.imagem}
-                  alt={loja.nome}
-                  className="w-10 h-10 rounded-full object-cover border"
-                />
+                {/* Faz fallback para placeholder caso não venha nada */}
+                {(() => {
+                  const img = loja.imagem || "";
+                  const src = img.startsWith("http")
+                    ? img
+                    : img.startsWith("/") // se já começa com slash, só junta host + caminho
+                    ? `http://localhost:4000${img}`
+                    : // senão assume que é apenas um filename genérico
+                      `http://localhost:4000/uploads/${img}`;
+
+                  return (
+                    <img
+                      src={src}
+                      alt={loja.nome}
+                      className="w-10 h-10 rounded-full object-cover border"
+                    />
+                  );
+                })()}
+
                 {loja.nome}
               </li>
             ))}
@@ -195,11 +216,24 @@ export default function ContatoLoja() {
         {lojaSelecionada && (
           <>
             <div className="flex items-center gap-3 mb-2">
-              <img
-                src={lojaSelecionada.imagem}
-                alt={lojaSelecionada.nome}
-                className="w-10 h-10 rounded-full object-cover border"
-              />
+              {/* Mesmo tratamento para a logo selecionada */}
+              {(() => {
+                const img = lojaSelecionada.imagem || "";
+                const src = img.startsWith("http")
+                  ? img
+                  : img.startsWith("/")
+                  ? `http://localhost:4000${img}`
+                  : `http://localhost:4000/uploads/${img}`;
+
+                return (
+                  <img
+                    src={src}
+                    alt={lojaSelecionada.nome}
+                    className="w-10 h-10 rounded-full object-cover border"
+                  />
+                );
+              })()}
+
               <h2 className="text-xl font-bold text-blue-800">
                 Contato com {lojaSelecionada.nome}
               </h2>
@@ -228,10 +262,11 @@ export default function ContatoLoja() {
                       {msg.tipo === "texto" && <span>{msg.conteudo}</span>}
                       {msg.tipo === "imagem" && (
                         <img
-                          src={msg.conteudo}
-                          alt="imagem"
-                          className="rounded max-w-full cursor-pointer hover:brightness-90"
-                          onClick={() => window.open(msg.conteudo, "_blank")}
+                          src={
+                            msg.conteudo.startsWith("http")
+                              ? msg.conteudo
+                              : `http://localhost:4000${msg.conteudo}`
+                          }
                         />
                       )}
                       {msg.tipo === "audio" && (
