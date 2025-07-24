@@ -21,7 +21,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [liked, setLiked] = useState([]);
-  const [cart, setCart] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [commerces, setCommerces] = useState([]);
   const [showAllCommerces, setShowAllCommerces] = useState(false);
@@ -48,14 +47,6 @@ export default function Home() {
     return parseFloat(cleaned);
   };
 
-  const addToCart = (product) => {
-    setCart((prev) => [...prev, product]);
-  };
-
-  const removeFromCart = (index) => {
-    setCart((prev) => prev.filter((_, i) => i !== index));
-  };
-
   useEffect(() => {
     async function fetchInitialData() {
       try {
@@ -75,6 +66,7 @@ export default function Home() {
 
         // armazena em allProducts e em products
         setAllProducts(produtos);
+        setBaseProducts(produtos);
         setProducts(produtos);
       } catch (err) {
         console.error(err);
@@ -101,6 +93,8 @@ export default function Home() {
         const data = Array.isArray(res.data) ? res.data : res.data.products;
 
         setProducts(data);
+        setBaseProducts(data);
+
         // se você quiser que o “Todos” volte a ser allProducts original,
         // não sobreescreva allProducts aqui
       } catch (err) {
@@ -149,6 +143,11 @@ export default function Home() {
     setProducts(filtered);
     setShowFilters(false);
   };
+
+  // 1) Calcula top 4 por média de avaliação
+  const bestRated = [...allProducts]
+    .sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0))
+    .slice(0, 4);
 
   return (
     <div
@@ -361,67 +360,27 @@ export default function Home() {
                 product={product}
                 isLiked={liked.includes(product.id)}
                 onToggleLike={toggleLike}
-                onAddToCart={addToCart}
               />
             </motion.div>
           ))}
         </div>
       </section>
-      {/* Mais Vendidos */}
+      {/* Melhor Avaliados */}
       <section className="p-6">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">
-          🔥 Mais Vendidos
+          ⭐ Melhor Avaliados
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {allProducts.slice(0, 4).map((product) => (
+          {bestRated.map((product) => (
             <ProductCard
-              key={`maisvendido-${product.id}`}
+              key={`bestRated-${product.id}`}
               product={product}
               isLiked={liked.includes(product.id)}
               onToggleLike={toggleLike}
-              onAddToCart={addToCart}
             />
           ))}
         </div>
       </section>
-      {/* Carrinho */}
-      {cart.length > 0 && (
-        <motion.div
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          className="fixed bottom-4 right-4 bg-white shadow-xl p-4 rounded-2xl w-80 z-50"
-        >
-          <h4 className="font-bold mb-2 text-gray-900">🛒 Carrinho</h4>
-          <ul className="max-h-48 overflow-y-auto divide-y divide-gray-200">
-            {cart.map((item, idx) => (
-              <li
-                key={idx}
-                className="flex justify-between items-center text-sm py-2"
-              >
-                <div>
-                  <p className="font-medium">{item.title || item.name}</p>
-                  {item.price && (
-                    <span className="text-gray-500 text-xs">
-                      {typeof item.price === "string"
-                        ? item.price
-                        : `R$ ${parseFloat(item.price).toFixed(2)}`}
-                    </span>
-                  )}
-                </div>
-                <button
-                  onClick={() => removeFromCart(idx)}
-                  className="text-gray-500 hover:text-red-600"
-                >
-                  <FiTrash2 />
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button className="mt-3 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
-            Finalizar Compra
-          </button>
-        </motion.div>
-      )}
     </div>
   );
 }

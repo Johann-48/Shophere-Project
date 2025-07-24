@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FiSend, FiCamera, FiMic, FiX } from "react-icons/fi";
 
 export default function ContatoLoja() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   // 1) Estado para lojas e seleção
   const [lojas, setLojas] = useState([]);
   const [lojaSelecionada, setLojaSelecionada] = useState(null);
@@ -21,32 +25,54 @@ export default function ContatoLoja() {
   // id da loja atual
   const idLoja = lojaSelecionada?.id;
 
-  // Carrega as lojas ao montar
+  // Fetch chats e pré-seleção via query params
   useEffect(() => {
     async function fetchChatsDoUsuario() {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
-        const clienteId = user?.id;
-        if (!clienteId) return;
-
-        const res = await axios.get(`/api/chats/user/${clienteId}`);
+        if (!user?.id) return;
+        const res = await axios.get(`/api/chats/user/${user.id}`);
         const lojasComChat = res.data.map((chat) => ({
           id: chat.loja_id,
           nome: chat.loja_nome,
-          imagem: chat.loja_foto, // <<< aqui
+          imagem: chat.loja_foto,
         }));
-
         setLojas(lojasComChat);
-        if (lojasComChat.length) setLojaSelecionada(lojasComChat[0]);
+
+        const params = new URLSearchParams(location.search);
+        const urlLojaId = params.get("lojaId");
+        const preset = params.get("message");
+
+        let selecionada = null;
+        if (urlLojaId) {
+          selecionada = lojasComChat.find((l) => String(l.id) === urlLojaId);
+          if (!selecionada) {
+            // busca comércio direto no BACKEND
+            const comRes = await axios.get(`/api/commerces/${urlLojaId}`);
+            selecionada = {
+              id: comRes.data.id,
+              nome: comRes.data.nome,
+              imagem: comRes.data.foto, // ou comRes.data.imageUrl, conforme seu esquema
+            };
+            // opcional: adiciona no topo da lista para que apareça no menu
+            setLojas((prev) => [selecionada, ...prev]);
+          }
+        }
+
+        if (!selecionada && lojasComChat.length) {
+          selecionada = lojasComChat[0];
+        }
+        setLojaSelecionada(selecionada || null);
+
+        if (preset) setNovaMensagem(decodeURIComponent(preset));
       } catch (err) {
-        console.error("Erro ao buscar chats do usuário:", err);
+        console.error(err);
       }
     }
-
     fetchChatsDoUsuario();
-  }, []);
+  }, [location.search]);
 
-  // Abre/cria chat quando troca de loja
+  // Abre ou cria chat quando troca de loja
   useEffect(() => {
     if (!idLoja) return;
     async function getOrCreate() {
@@ -75,14 +101,6 @@ export default function ContatoLoja() {
     }
   }
 
-  // Atualiza localmente mensagens
-  function atualizarMensagens(novas) {
-    if (!chatId) return;
-    setMensagensPorLoja((prev) => ({ ...prev, [chatId]: novas }));
-  }
-
-  const mensagensAtuais = chatId ? mensagensPorLoja[chatId] || [] : [];
-
   // Envio de texto
   async function enviarTexto(e) {
     e.preventDefault();
@@ -105,16 +123,18 @@ export default function ContatoLoja() {
   async function enviarImagem(e) {
     const file = e.target.files[0];
     if (!file || !chatId) return;
-    // 1) faz upload para o servidor
     const formData = new FormData();
     formData.append("imagem", file);
-    const uploadRes = await axios.post("/api/upload/image/imagem", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    const caminho = uploadRes.data.caminho; // ex: "/uploads/imagens/img_123.png"
-    // 2) envia a mensagem com o caminho salvo
-    const payload = { remetente: "cliente", tipo: "imagem", conteudo: caminho };
     try {
+      const uploadRes = await axios.post("/api/upload/image/imagem", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const caminho = uploadRes.data.caminho;
+      const payload = {
+        remetente: "cliente",
+        tipo: "imagem",
+        conteudo: caminho,
+      };
       await axios.post(`/api/chats/${chatId}/mensagens`, payload);
       fetchMensagens(chatId);
     } catch (err) {
@@ -133,20 +153,16 @@ export default function ContatoLoja() {
       mediaRecorderRef.current.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         chunksRef.current = [];
-
         const formData = new FormData();
         formData.append("audio", blob, "audio.webm");
-
         try {
           const upload = await axios.post(`/api/upload/audio`, formData);
-          const caminho = upload.data.caminho; // ex: "audio_123.webm"
-
+          const caminho = upload.data.caminho;
           const payload = {
             remetente: "cliente",
             tipo: "audio",
             conteudo: caminho,
           };
-
           await axios.post(`/api/chats/${chatId}/mensagens`, payload);
           fetchMensagens(chatId);
           setGravando(false);
@@ -154,7 +170,6 @@ export default function ContatoLoja() {
           console.error("Erro ao enviar áudio:", err);
         }
       };
-
       mediaRecorderRef.current.start();
       setGravando(true);
     } catch {
@@ -165,6 +180,8 @@ export default function ContatoLoja() {
   function pararGravacao() {
     if (mediaRecorderRef.current && gravando) mediaRecorderRef.current.stop();
   }
+
+  const mensagensAtuais = chatId ? mensagensPorLoja[chatId] || [] : [];
 
   return (
     <div className="flex h-[600px] max-w-6xl mx-auto bg-gray-50 shadow rounded overflow-hidden mt-[40px] mb-[40px]">
@@ -185,16 +202,14 @@ export default function ContatoLoja() {
                     : "hover:bg-gray-100"
                 }`}
               >
-                {/* Faz fallback para placeholder caso não venha nada */}
+                {/* Avatar */}
                 {(() => {
                   const img = loja.imagem || "";
                   const src = img.startsWith("http")
                     ? img
-                    : img.startsWith("/") // se já começa com slash, só junta host + caminho
+                    : img.startsWith("/")
                     ? `http://localhost:4000${img}`
-                    : // senão assume que é apenas um filename genérico
-                      `http://localhost:4000/uploads/${img}`;
-
+                    : `http://localhost:4000/uploads/${img}`;
                   return (
                     <img
                       src={src}
@@ -203,7 +218,6 @@ export default function ContatoLoja() {
                     />
                   );
                 })()}
-
                 {loja.nome}
               </li>
             ))}
@@ -216,7 +230,6 @@ export default function ContatoLoja() {
         {lojaSelecionada && (
           <>
             <div className="flex items-center gap-3 mb-2">
-              {/* Mesmo tratamento para a logo selecionada */}
               {(() => {
                 const img = lojaSelecionada.imagem || "";
                 const src = img.startsWith("http")
@@ -224,7 +237,6 @@ export default function ContatoLoja() {
                   : img.startsWith("/")
                   ? `http://localhost:4000${img}`
                   : `http://localhost:4000/uploads/${img}`;
-
                 return (
                   <img
                     src={src}
@@ -233,12 +245,10 @@ export default function ContatoLoja() {
                   />
                 );
               })()}
-
               <h2 className="text-xl font-bold text-blue-800">
                 Contato com {lojaSelecionada.nome}
               </h2>
             </div>
-
             <div
               ref={chatRef}
               className="flex-1 overflow-y-auto space-y-4 p-4 bg-white rounded shadow-inner"
@@ -268,19 +278,16 @@ export default function ContatoLoja() {
                               : `http://localhost:4000${msg.conteudo}`
                           }
                         />
-                      )}
+                      )}{" "}
                       {msg.tipo === "audio" && (
                         <audio
                           controls
                           src={
-                            // 1) blob URLs (temporárias no navegador) devem ser usadas “in-loco”
                             msg.conteudo.startsWith("blob:")
                               ? msg.conteudo
-                              : // 2) caminhos vindos do seu backend já começam com “/uploads”
-                              msg.conteudo.startsWith("/")
+                              : msg.conteudo.startsWith("/")
                               ? `http://localhost:4000${msg.conteudo}`
-                              : // 3) casos “exóticos”, aceita direto
-                                msg.conteudo
+                              : msg.conteudo
                           }
                         />
                       )}
@@ -289,7 +296,6 @@ export default function ContatoLoja() {
                 );
               })}
             </div>
-
             <form onSubmit={enviarTexto} className="mt-4 space-y-3">
               <div className="flex gap-2">
                 <input
