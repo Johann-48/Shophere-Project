@@ -31,44 +31,70 @@ export default function ContatoLoja() {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user?.id) return;
+
+        // 1) pega params da URL
+        const params = new URLSearchParams(location.search);
+        const urlLojaId = params.get("lojaId"); // pode ser null ou string
+        const preset = params.get("message"); // pode ser null ou string
+
+        console.log("DEBUG ➔ location.search:", location.search);
+        console.log("DEBUG ➔ urlLojaId raw:", urlLojaId);
+
+        // 2) busca todos os chats do usuário
         const res = await axios.get(`/api/chats/user/${user.id}`);
         const lojasComChat = res.data.map((chat) => ({
           id: chat.loja_id,
           nome: chat.loja_nome,
           imagem: chat.loja_foto,
         }));
-        setLojas(lojasComChat);
 
-        const params = new URLSearchParams(location.search);
-        const urlLojaId = params.get("lojaId");
-        const preset = params.get("message");
+        console.log("DEBUG ➔ lojasComChat:", lojasComChat);
 
         let selecionada = null;
+
+        // 3) só tenta buscar comércio se urlLojaId for uma string não-vazia E não estiver na lista
         if (urlLojaId) {
           selecionada = lojasComChat.find((l) => String(l.id) === urlLojaId);
+          console.log("DEBUG ➔ encontrada na lista:", selecionada);
+
           if (!selecionada) {
-            // busca comércio direto no BACKEND
-            const comRes = await axios.get(`/api/commerces/${urlLojaId}`);
-            selecionada = {
-              id: comRes.data.id,
-              nome: comRes.data.nome,
-              imagem: comRes.data.foto, // ou comRes.data.imageUrl, conforme seu esquema
-            };
-            // opcional: adiciona no topo da lista para que apareça no menu
-            setLojas((prev) => [selecionada, ...prev]);
+            // **garante que urlLojaId não seja 'undefined' literal**
+            if (urlLojaId === "undefined" || urlLojaId.trim() === "") {
+              console.warn(
+                "WARN ➔ urlLojaId é inválida, pulando fetch externo"
+              );
+            } else {
+              console.log(`DEBUG ➔ buscando /api/commerces/${urlLojaId}`);
+              const comRes = await axios.get(`/api/commerces/${urlLojaId}`);
+              selecionada = {
+                id: comRes.data.id,
+                nome: comRes.data.nome,
+                imagem: comRes.data.foto,
+              };
+              lojasComChat.unshift(selecionada);
+            }
           }
         }
 
-        if (!selecionada && lojasComChat.length) {
+        // 4) se nada selecionado, pega o primeiro histórico
+        if (!selecionada && lojasComChat.length > 0) {
           selecionada = lojasComChat[0];
+          console.log("DEBUG ➔ fallback para primeira loja:", selecionada);
         }
-        setLojaSelecionada(selecionada || null);
 
-        if (preset) setNovaMensagem(decodeURIComponent(preset));
+        // 5) atualiza estado
+        setLojas(lojasComChat);
+        setLojaSelecionada(selecionada);
+
+        // 6) define mensagem padrão se existir
+        if (preset) {
+          setNovaMensagem(decodeURIComponent(preset));
+        }
       } catch (err) {
-        console.error(err);
+        console.error("Erro ao buscar chats do usuário:", err);
       }
     }
+
     fetchChatsDoUsuario();
   }, [location.search]);
 
@@ -253,11 +279,20 @@ export default function ContatoLoja() {
               ref={chatRef}
               className="flex-1 overflow-y-auto space-y-4 p-4 bg-white rounded shadow-inner"
             >
-              {mensagensAtuais.map((msg) => {
+              {mensagensAtuais.map((msg, index) => {
                 const isCliente = msg.remetente === "cliente";
+
+                // Define uma chave segura
+                const key =
+                  msg.id ??
+                  `${msg.tipo}-${msg.conteudo?.slice?.(
+                    0,
+                    20
+                  )}-${index}-${Math.random()}`;
+
                 return (
                   <div
-                    key={msg.id}
+                    key={key}
                     className={`flex ${
                       isCliente ? "justify-start" : "justify-end"
                     }`}
@@ -278,7 +313,7 @@ export default function ContatoLoja() {
                               : `http://localhost:4000${msg.conteudo}`
                           }
                         />
-                      )}{" "}
+                      )}
                       {msg.tipo === "audio" && (
                         <audio
                           controls
