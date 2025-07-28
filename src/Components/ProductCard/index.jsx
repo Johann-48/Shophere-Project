@@ -34,7 +34,7 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
   console.log("DEBUG ProductCard → produto:", product);
 
   // guarda o id da loja apenas se o backend tiver enviado
-  const lojaId = product.comercio?.id;
+  const lojaId = product.comercio.id;
 
   const presetMsg = encodeURIComponent(
     `Olá, tenho interesse no produto "${
@@ -74,9 +74,9 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
         {product.title || product.name}
       </h3>
 
-      {product.commerceName && (
+      {product.comercio && (
         <p className="text-xs text-gray-500 mb-2">
-          Loja: <span className="font-medium">{product.commerceName}</span>
+          Loja: <span className="font-medium">{product.comercio.nome}</span>
         </p>
       )}
 

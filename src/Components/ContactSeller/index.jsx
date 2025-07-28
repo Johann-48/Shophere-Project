@@ -6,6 +6,8 @@ import { FiSend, FiCamera, FiMic, FiX } from "react-icons/fi";
 export default function ContatoLoja() {
   const location = useLocation();
   const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const presetMsg = params.get("message");
 
   // 1) Estado para lojas e seleção
   const [lojas, setLojas] = useState([]);
@@ -71,7 +73,14 @@ export default function ContatoLoja() {
                 nome: comRes.data.nome,
                 imagem: comRes.data.foto,
               };
-              lojasComChat.unshift(selecionada);
+              // só adiciona se ainda não estiver no array
+              if (!lojasComChat.some((l) => l.id === selecionada.id)) {
+                lojasComChat.unshift(selecionada);
+              }
+              const lojasÚnicas = Array.from(
+                new Map(lojasComChat.map((l) => [l.id, l])).values()
+              );
+              setLojas(lojasÚnicas);
             }
           }
         }
@@ -105,8 +114,13 @@ export default function ContatoLoja() {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
         const clienteId = user?.id;
+        // inclui message para criar a mensagem inicial no backend
         const res = await axios.get("/api/chats", {
-          params: { clienteId, lojaId: idLoja },
+          params: {
+            clienteId,
+            lojaId: idLoja,
+            initMessage: presetMsg, // aqui!
+          },
         });
         setChatId(res.data.id);
         fetchMensagens(res.data.id);
@@ -115,7 +129,7 @@ export default function ContatoLoja() {
       }
     }
     getOrCreate();
-  }, [idLoja]);
+  }, [idLoja, presetMsg]);
 
   // Função para buscar mensagens de um chat
   async function fetchMensagens(id) {
@@ -230,12 +244,18 @@ export default function ContatoLoja() {
               >
                 {/* Avatar */}
                 {(() => {
-                  const img = loja.imagem || "";
-                  const src = img.startsWith("http")
-                    ? img
-                    : img.startsWith("/")
-                    ? `http://localhost:4000${img}`
-                    : `http://localhost:4000/uploads/${img}`;
+                  const img = loja.imagem;
+                  let src;
+                  if (img && img.startsWith("http")) {
+                    src = img;
+                  } else if (img && img.startsWith("/")) {
+                    src = `http://localhost:4000${img}`;
+                  } else if (img) {
+                    src = `http://localhost:4000/uploads/${img}`;
+                  } else {
+                    // aqui, quando não há arquivo, cai no placeholder local
+                    src = "/assets/placeholder.png";
+                  }
                   return (
                     <img
                       src={src}
@@ -283,12 +303,7 @@ export default function ContatoLoja() {
                 const isCliente = msg.remetente === "cliente";
 
                 // Define uma chave segura
-                const key =
-                  msg.id ??
-                  `${msg.tipo}-${msg.conteudo?.slice?.(
-                    0,
-                    20
-                  )}-${index}-${Math.random()}`;
+                const key = msg.id ?? `msg-${index}`;
 
                 return (
                   <div
