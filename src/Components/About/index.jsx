@@ -5,14 +5,14 @@ const About = () => {
   const cards = [
     {
       title: "🌟 Missão",
-      text: "Conectar pessoas aos melhores produtos do mercado, com uma experiência de busca intuitiva, ágil e moderna.",
+      text: "Conectar pessoas aos produtos do mercado me sua região, com uma experiência de busca ágil.",
       icon: "🚀",
       detail:
         "Nossa missão é garantir que cada busca seja relevante e personalizada, colocando o usuário sempre em primeiro lugar.",
     },
     {
       title: "🚀 Visão",
-      text: "Ser a principal plataforma de descoberta de produtos na América Latina, reconhecida pela inovação e design.",
+      text: "Promover a economia regional, fotalecendo a região",
       icon: "🌍",
       detail:
         "Expandir continuamente nosso alcance e impactar positivamente milhares de pessoas com tecnologia e design de ponta.",
@@ -28,25 +28,27 @@ const About = () => {
 
   const equipe = [
     {
-      nome: "Gabriel Silva",
-      cargo: "Fundador & CEO",
-      imagem: "https://randomuser.me/api/portraits/men/32.jpg",
-      bio: "Apaixonado por tecnologia e empreendedorismo, lidera a visão estratégica da ShopHere.",
-      linkedin: "https://linkedin.com/in/gabrielsilva",
+      nome: "Johann Bauermann",
+      cargo: "Back-End e Banco de Dados",
+      imagem:
+        "https://instagram.fqps2-1.fna.fbcdn.net/v/t51.2885-19/473993506_2043483882791388_169030346276186047_n.jpg?stp=dst-jpg_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=instagram.fqps2-1.fna.fbcdn.net&_nc_cat=100&_nc_oc=Q6cZ2QFYwocE9Zxe5nL0BbB3Xbdol0bbQlv4UOa-Iw961S4Ymfn7xVdsLB4JWDCI7Ac-FefeaLyF7Z4Z-C_XviPnN12E&_nc_ohc=9K71eo4jhn0Q7kNvwG2s6KS&_nc_gid=B6oZDJsxLkE0aokXQKFu6Q&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfRa7PaoFr4rz-Z_SqdzAbk4Et2AEPiVXyi7f731eCOUtA&oe=688FD2AD&_nc_sid=7a9f4b",
+      bio: "especialista em Node e SQL, cria a parte funcional do site",
+      instagram: "https://www.instagram.com/johannsb2008",
     },
     {
-      nome: "Larissa Costa",
-      cargo: "Desenvolvedora Front-End",
-      imagem: "https://randomuser.me/api/portraits/women/65.jpg",
+      nome: "Gabriel Luccas",
+      cargo: "Front-End e Back-End",
+      imagem:
+        "https://instagram.fqps2-1.fna.fbcdn.net/v/t51.2885-19/434429450_952256095968187_9130657042695330855_n.jpg?stp=dst-jpg_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby44MjguYzIifQ&_nc_ht=instagram.fqps2-1.fna.fbcdn.net&_nc_cat=107&_nc_oc=Q6cZ2QELtEshFSRhRw-AW89RSe-BFXg9njdVc3dz1nSYyjHCdUCR50PDef7w4Dq1dPLvR6-Z2ecPgDPmOrlBMHgsXa2D&_nc_ohc=kRNXUVGmpAcQ7kNvwGivtna&_nc_gid=9QJ1kDhJ24_H7tVYOXEkzg&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfRF1ZQgOnq1AybnRXtymBBmauhI0-W2CbhNABLvq16DQg&oe=688FDE1D&_nc_sid=7a9f4b",
       bio: "Especialista em React e design responsivo, cria interfaces modernas e funcionais.",
-      linkedin: "https://linkedin.com/in/larissacosta",
+      instagram: "https://www.instagram.com/gabrieel.lc",
     },
     {
-      nome: "Pedro Almeida",
-      cargo: "Designer UI/UX",
+      nome: "Leonardo",
+      cargo: "Front-End",
       imagem: "https://randomuser.me/api/portraits/men/75.jpg",
-      bio: "Designer dedicado a criar experiências incríveis e intuitivas para os usuários.",
-      linkedin: "https://linkedin.com/in/pedroalmeida",
+      bio: "Auxiliar em desenvolvimento Front",
+      instagram: "https://www.instagram.com/leozeraaa2807",
     },
   ];
 
@@ -178,7 +180,7 @@ const About = () => {
                   {membro.bio}
                 </p>
                 <a
-                  href={membro.linkedin}
+                  href={membro.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2 bg-[#282933] text-white rounded-full shadow-md hover:bg-[#43444F] transition"
@@ -190,22 +192,12 @@ const About = () => {
                   >
                     <path d="M19 0h-14c-2.75 0-5 2.25-5 5v14c0 2.75 2.25 5 5 5h14c2.75 0 5-2.25 5-5v-14c0-2.75-2.25-5-5-5zm-11.5 19h-3v-10h3v10zm-1.5-11.5c-.967 0-1.75-.78-1.75-1.75 0-.967.783-1.75 1.75-1.75s1.75.783 1.75 1.75c0 .967-.783 1.75-1.75 1.75zm13 11.5h-3v-5c0-1.25-.5-2-1.75-2s-2 .75-2 2v5h-3v-10h3v1.4c.9-1.3 2.75-1.4 3.75-1.4 2.3 0 3.25 1.5 3.25 3.75v6.25z" />
                   </svg>
-                  LinkedIn
+                  Instagram
                 </a>
               </motion.div>
             </motion.div>
           ))}
         </div>
-
-        {/* Footer */}
-        <motion.footer
-          className="mt-28 text-center text-[#43444F] text-sm border-t border-[#43444F] pt-6 font-light tracking-wide"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-        >
-          © {new Date().getFullYear()} ShopHere — Todos os direitos reservados.
-        </motion.footer>
       </div>
     </div>
   );
