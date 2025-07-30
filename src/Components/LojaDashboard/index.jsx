@@ -434,13 +434,42 @@ function MeusProdutos() {
                       ))}
                     </select>
                   </label>
-                  <input
-                    className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    name="imagem"
-                    value={produtoEditando.imagem}
-                    onChange={handleEditChange}
-                    placeholder="URL da Imagem"
-                  />
+                  <label className="flex flex-col">
+                    Imagem do produto
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const form = new FormData();
+                        form.append("foto", file);
+                        try {
+                          const token = localStorage.getItem("token");
+                          // supondo que sua rota de upload seja POST /api/upload/:produtoId
+                          const resp = await axios.post(
+                            `/api/upload/${produtoEditando.id}`,
+                            form,
+                            {
+                              headers: {
+                                "Content-Type": "multipart/form-data",
+                                Authorization: `Bearer ${token}`,
+                              },
+                            }
+                          );
+                          // resp.data.url → nova URL da imagem
+                          setProdutoEditando((prev) => ({
+                            ...prev,
+                            imagem: resp.data.url,
+                          }));
+                        } catch (err) {
+                          console.error("Erro no upload da imagem:", err);
+                          alert("Falha ao enviar imagem");
+                        }
+                      }}
+                      className="mt-1"
+                    />
+                  </label>
 
                   <input
                     name="marca"
