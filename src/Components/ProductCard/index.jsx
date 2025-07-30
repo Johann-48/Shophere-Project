@@ -5,6 +5,7 @@ import { FiHeart, FiTrendingUp, FiTrendingDown } from "react-icons/fi";
 import { motion } from "framer-motion";
 
 export default function ProductCard({ product, isLiked, onToggleLike }) {
+  console.log("💡 ProductCard.product:", product);
   const navigate = useNavigate();
   // Extrai priceNum, oldPriceNum e trend igual ao Home
   let priceNum = null;
@@ -30,11 +31,25 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
   if (priceNum != null && oldPriceNum != null) {
     priceTrend = priceNum > oldPriceNum ? "up" : "down";
   }
+  console.log("DEBUG ProductCard → produto:", product);
+
+  // guarda o id da loja apenas se o backend tiver enviado
+  const lojaId = product.comercio.id;
+
   const presetMsg = encodeURIComponent(
     `Olá, tenho interesse no produto "${
       product.title || product.name
     }". Você pode me informar disponibilidade e prazo de entrega(se disponível)?`
   );
+
+  console.log(
+    "DEBUG ProductCard → commerceId:",
+    product.commerceId,
+    " ou lojaId:",
+    product.lojaId
+  );
+
+  // log seguro, apenas para depuração:
 
   return (
     <motion.div
@@ -59,9 +74,9 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
         {product.title || product.name}
       </h3>
 
-      {product.commerceName && (
+      {product.comercio && (
         <p className="text-xs text-gray-500 mb-2">
-          Loja: <span className="font-medium">{product.commerceName}</span>
+          Loja: <span className="font-medium">{product.comercio.nome}</span>
         </p>
       )}
 
@@ -86,13 +101,18 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
 
       <div className="mt-auto flex justify-between items-center">
         {/* Link direto para /contact, passando loja e mensagem */}
-        <Link
-          to={`/contact?lojaId=${product.commerceId}&message=${presetMsg}`}
-          onClick={(e) => e.stopPropagation()}
-          className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition text-sm"
-        >
-          Conversar com Vendedor
-        </Link>
+        {/* só renderiza o link se tivermos um lojaId válido */}
+        {lojaId ? (
+          <Link
+            to={`/contact?lojaId=${lojaId}&message=${presetMsg}`}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition text-sm"
+          >
+            Conversar com Vendedor
+          </Link>
+        ) : (
+          <span className="text-gray-400 text-sm">Loja indisponível</span>
+        )}
       </div>
     </motion.div>
   );
