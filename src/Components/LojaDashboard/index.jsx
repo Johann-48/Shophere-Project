@@ -562,6 +562,9 @@ function MeusProdutos() {
 }
 
 function EditarLoja() {
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+
   const [form, setForm] = useState({
     nome: "",
     endereco: "",
@@ -620,6 +623,30 @@ function EditarLoja() {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (!senhaAtual || !novaSenha) {
+      alert("Preencha ambos os campos de senha.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        "/api/auth/change-password",
+        { senhaAtual, novaSenha },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert("Senha alterada com sucesso!");
+      setSenhaAtual("");
+      setNovaSenha("");
+    } catch (err) {
+      console.error("Erro ao alterar senha:", err);
+      alert(
+        err.response?.data?.message || "Erro ao alterar senha. Tente novamente."
+      );
+    }
+  };
+
   if (loading) return <p>Carregando dados...</p>;
 
   return (
@@ -652,6 +679,35 @@ function EditarLoja() {
         onChange={handleChange}
         placeholder="Descrição da Loja"
       />
+
+      <div className="mt-8 border-t pt-6">
+        <h3 className="text-xl font-semibold text-zinc-800 mb-3">
+          Alterar Senha
+        </h3>
+
+        <AnimatedInput
+          type="password"
+          name="senhaAtual"
+          value={senhaAtual}
+          onChange={(e) => setSenhaAtual(e.target.value)}
+          placeholder="Senha Atual"
+        />
+        <AnimatedInput
+          type="password"
+          name="novaSenha"
+          value={novaSenha}
+          onChange={(e) => setNovaSenha(e.target.value)}
+          placeholder="Nova Senha"
+        />
+
+        <button
+          type="button"
+          onClick={handleChangePassword}
+          className="bg-blue-600 text-white py-3 mt-2 font-medium rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg"
+        >
+          Alterar Senha
+        </button>
+      </div>
 
       <button
         type="submit"
