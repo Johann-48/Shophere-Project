@@ -11,6 +11,7 @@ export default function Signup({ goBackToLogin }) {
     email: "",
     password: "",
     confirmPassword: "",
+    telefone: "",
   });
 
   const handleChange = (e) => {
@@ -20,8 +21,37 @@ export default function Signup({ goBackToLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validação básica dos campos
+    if (
+      !form.name ||
+      !form.email ||
+      !form.password ||
+      !form.confirmPassword ||
+      !form.telefone
+    ) {
+      alert(
+        "Por favor, preencha todos os campos obrigatórios (nome, email, telefone e senha)."
+      );
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
       alert("As senhas não coincidem.");
+      return;
+    }
+
+    // Validação do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      alert("Por favor, insira um email válido.");
+      return;
+    }
+
+    // Validação do telefone (aceita formatos: (99)99999-9999 ou 99999999999)
+    const telefoneRegex = /^(?:\([0-9]{2}\)|[0-9]{2})?[0-9]{9}$/;
+    const telefoneNumerico = form.telefone.replace(/\D/g, "");
+    if (!telefoneRegex.test(telefoneNumerico)) {
+      alert("Por favor, insira um número de telefone válido com DDD.");
       return;
     }
 
@@ -29,9 +59,10 @@ export default function Signup({ goBackToLogin }) {
       const response = await axios.post(
         "http://localhost:4000/api/auth/signup",
         {
-          nome: form.name,
-          email: form.email,
+          nome: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
           senha: form.password,
+          telefone: telefoneNumerico,
         }
       );
 
@@ -41,8 +72,12 @@ export default function Signup({ goBackToLogin }) {
       console.error("Erro no cadastro:", error);
       if (error.response?.data?.message) {
         alert(error.response.data.message);
+      } else if (error.code === "ERR_NETWORK") {
+        alert(
+          "Erro de conexão com o servidor. Verifique se o servidor está rodando."
+        );
       } else {
-        alert("Erro ao tentar criar conta.");
+        alert("Erro ao tentar criar conta. Por favor, tente novamente.");
       }
     }
   };
@@ -140,6 +175,27 @@ export default function Signup({ goBackToLogin }) {
                 type="password"
                 placeholder="Confirme sua senha"
                 value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="telefone"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Telefone
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-3.5 text-gray-500">📞</span>
+              <input
+                id="telefone"
+                type="tel"
+                placeholder="(99)999999999"
+                value={form.telefone}
                 onChange={handleChange}
                 required
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1565C0]"

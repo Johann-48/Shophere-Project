@@ -49,7 +49,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
   };
 
   return (
-    <main className="flex-1 min-h-screen py-16 px-6 bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white">
+    <main className="flex-1 bg-gradient-to-r from-blue-100 to-white py-16 px-6 min-h-screen">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         {/* Imagem lateral */}
         <motion.div
@@ -82,7 +82,10 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-black mb-1 font-semibold">
+              <label
+                htmlFor="email"
+                className="block text-black mb-1 font-semibold"
+              >
                 Email ou Celular
               </label>
               <div className="relative">
@@ -100,7 +103,10 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-black mb-1 font-semibold">
+              <label
+                htmlFor="password"
+                className="block text-black mb-1 font-semibold"
+              >
                 Senha
               </label>
               <div className="relative">
@@ -135,9 +141,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
               type="submit"
               disabled={loading}
               className={`w-full bg-black text-white py-3 rounded-lg transition text-lg font-semibold ${
-                loading
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-800"
+                loading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
               }`}
             >
               {loading ? "Entrando..." : "Entrar"}

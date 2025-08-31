@@ -262,7 +262,7 @@ export default function Home() {
                 </h3>
                 <button
                   onClick={toggleFilters}
-                  className="text-gray-500 hover:text-red-600"
+                  className="text-gray-500 hover:text-blue-600"
                 >
                   <FiXCircle size={20} />
                 </button>

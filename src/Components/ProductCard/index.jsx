@@ -55,7 +55,7 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
     <motion.div
       onClick={() => navigate(`/produto/${product.id}`)}
       whileHover={{ scale: 1.03 }}
-      className="bg-white rounded-2xl shadow-lg p-4 relative flex flex-col hover:ring-2 hover:ring-red-300 transition cursor-pointer"
+      className="bg-white rounded-2xl shadow-lg p-4 relative flex flex-col hover:ring-2 hover:ring-blue-300 transition cursor-pointer"
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       <img
@@ -86,7 +86,7 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
 
       <div className="flex items-center gap-2 mb-2">
         {priceNum != null && (
-          <span className="text-red-500 font-bold">
+          <span className="text-blue-500 font-bold">
             R$ {priceNum.toFixed(2)}
           </span>
         )}

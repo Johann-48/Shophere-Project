@@ -106,7 +106,7 @@ export default function Header() {
           {/*<input
             type="text"
             placeholder="O que está procurando?"
-            className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0D47A1] transition-shadow"
+                        className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow"
           />
           <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#0D47A1] cursor-pointer" />
           */}

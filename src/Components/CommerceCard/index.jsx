@@ -9,7 +9,7 @@ export default function CommerceCard({ commerce }) {
       {/* página de detalhes futura */}
       <motion.div
         whileHover={{ scale: 1.02 }}
-        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:ring-2 hover:ring-red-300 transition"
+        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:ring-2 hover:ring-blue-300 transition"
       >
         <img
           src={commerce.logoUrl || "/assets/placeholder-store.png"}

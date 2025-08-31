@@ -142,7 +142,7 @@ export default function ProductPage() {
             <button
               key={idx}
               onClick={() => setMainImage(src)}
-              className="border rounded-lg p-1 cursor-pointer hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="border rounded-lg p-1 cursor-pointer hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-600"
               type="button"
             >
               <img
@@ -193,7 +193,7 @@ export default function ProductPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <p className="text-3xl font-bold text-red-600">{product.price}</p>
+            <p className="text-3xl font-bold text-blue-600">{product.price}</p>
             {product.oldPrice && (
               <p className="text-gray-400 line-through text-lg">
                 {product.oldPrice}
@@ -212,7 +212,7 @@ export default function ProductPage() {
             <div className="flex items-center border rounded-md overflow-hidden select-none">
               <button
                 onClick={decrement}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-red-600"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-blue-600"
                 type="button"
               >
                 -
@@ -220,7 +220,7 @@ export default function ProductPage() {
               <span className="px-6 py-2 font-mono">{quantity}</span>
               <button
                 onClick={increment}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-red-600"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-blue-600"
                 type="button"
               >
                 +
@@ -233,7 +233,7 @@ export default function ProductPage() {
               onClick={() =>
                 (window.location.href = `tel:${product.comercio.telefone}`)
               }
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-blue-600"
               type="button"
             >
               📞 Entrar em contato com a loja –{" "}
@@ -255,9 +255,9 @@ export default function ProductPage() {
               }
               className={`w-14 h-14 flex justify-center items-center border rounded-md transition ${
                 favorited
-                  ? "text-red-600 bg-red-100"
-                  : "text-gray-400 hover:text-red-600 hover:bg-red-100"
-              } focus:outline-none focus:ring-2 focus:ring-red-600`}
+                  ? "text-blue-600 bg-blue-100"
+                  : "text-gray-400 hover:text-blue-600 hover:bg-blue-100"
+              } focus:outline-none focus:ring-2 focus:ring-blue-600`}
               type="button"
             >
               {favorited ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
