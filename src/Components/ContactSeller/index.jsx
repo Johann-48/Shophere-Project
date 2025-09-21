@@ -2,10 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FiSend, FiCamera, FiMic, FiX } from "react-icons/fi";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function ContatoLoja() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
   const params = new URLSearchParams(location.search);
   const presetMsg = params.get("message");
 
@@ -223,11 +225,21 @@ export default function ContatoLoja() {
 
   const mensagensAtuais = chatId ? mensagensPorLoja[chatId] || [] : [];
 
+  // Define o gradiente baseado no tema
+  const backgroundGradient = isDarkMode 
+    ? 'bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100'
+    : 'bg-gradient-to-br from-green-100 via-white to-green-50';
+
+  const containerBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
+  const sidebarBg = isDarkMode ? 'bg-gray-700' : 'bg-white';
+  const textColor = isDarkMode ? 'text-gray-200' : 'text-gray-900';
+
   return (
-    <div className="flex h-[600px] max-w-6xl mx-auto bg-gray-50 shadow rounded overflow-hidden mt-[40px] mb-[40px]">
-      {/* Lista de Lojas */}
-      <aside className="w-1/4 bg-white border-r p-4 overflow-y-auto">
-        <h2 className="text-lg font-semibold mb-3">Lojas Disponíveis</h2>
+    <div className={`min-h-screen ${backgroundGradient} py-10`}>
+      <div className={`flex h-[600px] max-w-6xl mx-auto ${containerBg} shadow-xl rounded-lg overflow-hidden`}>
+        {/* Lista de Lojas */}
+        <aside className={`w-1/4 ${sidebarBg} border-r ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} p-4 overflow-y-auto`}>
+          <h2 className={`text-lg font-semibold mb-3 ${textColor}`}>Lojas Disponíveis</h2>
         {lojas.length === 0 ? (
           <p>Carregando lojas…</p>
         ) : (
@@ -238,8 +250,12 @@ export default function ContatoLoja() {
                 onClick={() => setLojaSelecionada(loja)}
                 className={`flex items-center gap-3 p-2 rounded cursor-pointer transition ${
                   lojaSelecionada?.id === loja.id
-                    ? "bg-blue-100 text-blue-700 font-semibold"
-                    : "hover:bg-gray-100"
+                    ? isDarkMode 
+                      ? "bg-blue-800 text-blue-200 font-semibold"
+                      : "bg-blue-100 text-blue-700 font-semibold"
+                    : isDarkMode 
+                      ? "hover:bg-gray-600"
+                      : "hover:bg-gray-100"
                 }`}
               >
                 {/* Avatar */}
@@ -291,13 +307,17 @@ export default function ContatoLoja() {
                   />
                 );
               })()}
-              <h2 className="text-xl font-bold text-blue-800">
+              <h2 className={`text-xl font-bold ${
+                isDarkMode ? 'text-blue-300' : 'text-blue-800'
+              }`}>
                 Contato com {lojaSelecionada.nome}
               </h2>
             </div>
             <div
               ref={chatRef}
-              className="flex-1 overflow-y-auto space-y-4 p-4 bg-white rounded shadow-inner"
+              className={`flex-1 overflow-y-auto space-y-4 p-4 rounded shadow-inner ${
+                isDarkMode ? 'bg-gray-800' : 'bg-white'
+              }`}
             >
               {mensagensAtuais.map((msg, index) => {
                 const isCliente = msg.remetente === "cliente";
@@ -315,8 +335,12 @@ export default function ContatoLoja() {
                     <div
                       className={`p-3 rounded-xl max-w-[75%] shadow transition-all ${
                         isCliente
-                          ? "bg-green-100 text-gray-800 rounded-bl-none"
-                          : "bg-blue-500 text-white rounded-br-none"
+                          ? isDarkMode 
+                            ? "bg-green-700 text-green-100 rounded-bl-none"
+                            : "bg-green-100 text-gray-800 rounded-bl-none"
+                          : isDarkMode 
+                            ? "bg-blue-600 text-white rounded-br-none"
+                            : "bg-blue-500 text-white rounded-br-none"
                       }`}
                     >
                       {msg.tipo === "texto" && <span>{msg.conteudo}</span>}
@@ -353,12 +377,20 @@ export default function ContatoLoja() {
                   value={novaMensagem}
                   onChange={(e) => setNovaMensagem(e.target.value)}
                   placeholder="Digite sua mensagem..."
-                  className="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className={`flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition ${
+                    isDarkMode 
+                      ? 'bg-gray-700 text-gray-200 border-gray-600 placeholder-gray-400' 
+                      : 'bg-white text-gray-900 border-gray-300 placeholder-gray-500'
+                  }`}
                 />
                 <button
                   type="submit"
                   disabled={!novaMensagem.trim()}
-                  className="p-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                  className={`p-3 text-white rounded disabled:opacity-50 transition ${
+                    isDarkMode 
+                      ? 'bg-blue-600 hover:bg-blue-500' 
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
                 >
                   <FiSend size={20} />
                 </button>
@@ -366,7 +398,11 @@ export default function ContatoLoja() {
               <div className="flex gap-3 items-center">
                 <label
                   htmlFor="file-upload"
-                  className="flex items-center gap-1 cursor-pointer bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded"
+                  className={`flex items-center gap-1 cursor-pointer px-3 py-2 rounded transition ${
+                    isDarkMode 
+                      ? 'bg-gray-600 hover:bg-gray-500 text-gray-200' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                  }`}
                   title="Enviar imagem"
                 >
                   <FiCamera size={18} />
@@ -391,7 +427,11 @@ export default function ContatoLoja() {
                   <button
                     type="button"
                     onClick={pararGravacao}
-                    className="flex items-center gap-1 bg-gray-700 hover:bg-gray-800 text-white px-3 py-2 rounded"
+                    className={`flex items-center gap-1 text-white px-3 py-2 rounded transition ${
+                      isDarkMode 
+                        ? 'bg-gray-600 hover:bg-gray-500' 
+                        : 'bg-gray-700 hover:bg-gray-800'
+                    }`}
                   >
                     <FiX size={18} />
                     Parar
@@ -402,6 +442,7 @@ export default function ContatoLoja() {
           </>
         )}
       </div>
+    </div>
     </div>
   );
 }

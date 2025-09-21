@@ -13,6 +13,7 @@ import {
   FiLock,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../contexts/ThemeContext";
 
 function validateEmail(email) {
   // Regex básica para email
@@ -31,6 +32,7 @@ function formatPhone(value) {
 }
 
 export default function AccountManagerPage() {
+  const { isDarkMode } = useTheme();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     nome: "",
@@ -159,7 +161,9 @@ export default function AccountManagerPage() {
       : "US";
 
     return (
-      <div className="w-24 h-24 rounded-full bg-[#1565C0] flex items-center justify-center text-white text-3xl font-bold select-none shadow-lg">
+      <div className={`w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold select-none shadow-lg ${
+        isDarkMode ? "bg-blue-600" : "bg-[#1565C0]"
+      }`}>
         {initials}
       </div>
     );
@@ -171,20 +175,29 @@ export default function AccountManagerPage() {
     { day: "2-digit", month: "long", year: "numeric" }
   );
 
+  // Define o gradiente baseado no tema
+  const backgroundGradient = isDarkMode 
+    ? 'bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100'
+    : 'bg-gradient-to-br from-green-100 via-white to-green-50';
+
+  const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
+  const textColor = isDarkMode ? 'text-gray-200' : 'text-gray-900';
+  const loadingTextColor = isDarkMode ? 'text-white' : 'text-gray-800';
+
   if (!user)
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 text-white text-lg animate-pulse">
+      <div className={`flex justify-center items-center h-screen ${backgroundGradient} ${loadingTextColor} text-lg animate-pulse`}>
         Carregando perfil...
       </div>
     );
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 flex items-center justify-center px-4 py-12">
+    <main className={`min-h-screen ${backgroundGradient} flex items-center justify-center px-4 py-12`}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative w-full max-w-3xl bg-white p-12 rounded-3xl shadow-2xl border border-[#90CAF9] select-none"
+        className={`relative w-full max-w-3xl ${cardBg} p-12 rounded-3xl shadow-2xl border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} select-none`}
       >
         {/* AVATAR e Botões editar */}
         <div className="flex items-center justify-between mb-8">
@@ -196,7 +209,11 @@ export default function AccountManagerPage() {
                 onClick={() => setIsEditing(true)}
                 aria-label="Editar perfil"
                 title="Editar perfil"
-                className="flex items-center gap-2 text-[#1565C0] font-semibold hover:text-[#0D47A1] transition"
+                className={`flex items-center gap-2 font-semibold transition ${
+                  isDarkMode 
+                    ? "text-blue-400 hover:text-blue-300" 
+                    : "text-[#1565C0] hover:text-[#0D47A1]"
+                }`}
               >
                 <FiEdit3 size={20} />
                 Editar
@@ -211,8 +228,12 @@ export default function AccountManagerPage() {
                   title="Salvar alterações"
                   className={`flex items-center gap-2 font-semibold rounded-md px-4 py-2 text-white transition ${
                     hasChanges && isFormValid && !loadingSave
-                      ? "bg-[#1565C0] hover:bg-[#0D47A1]"
-                      : "bg-gray-300 cursor-not-allowed"
+                      ? isDarkMode 
+                        ? "bg-blue-600 hover:bg-blue-500" 
+                        : "bg-[#1565C0] hover:bg-[#0D47A1]"
+                      : isDarkMode 
+                        ? "bg-gray-600 cursor-not-allowed" 
+                        : "bg-gray-300 cursor-not-allowed"
                   }`}
                 >
                   {loadingSave ? (
@@ -226,7 +247,11 @@ export default function AccountManagerPage() {
                   onClick={handleCancel}
                   aria-label="Cancelar edição"
                   title="Cancelar edição"
-                  className="flex items-center gap-2 font-semibold text-[#1565C0] hover:text-[#0D47A1] transition"
+                  className={`flex items-center gap-2 font-semibold transition ${
+                    isDarkMode 
+                      ? "text-blue-400 hover:text-blue-300" 
+                      : "text-[#1565C0] hover:text-[#0D47A1]"
+                  }`}
                 >
                   <FiRefreshCcw size={20} />
                   Cancelar
@@ -255,6 +280,7 @@ export default function AccountManagerPage() {
             required
             valid={isNomeValid}
             errorMsg="Nome é obrigatório"
+            isDarkMode={isDarkMode}
           />
           <Field
             id="email"
@@ -267,6 +293,7 @@ export default function AccountManagerPage() {
             required
             valid={isEmailValid}
             errorMsg="Email inválido"
+            isDarkMode={isDarkMode}
           />
           <Field
             id="telefone"
@@ -278,6 +305,7 @@ export default function AccountManagerPage() {
             required
             valid={isTelefoneValid}
             errorMsg="Telefone inválido"
+            isDarkMode={isDarkMode}
           />
           <Field
             id="cidade"
@@ -286,10 +314,13 @@ export default function AccountManagerPage() {
             onChange={handleChange}
             icon={<FiMapPin />}
             disabled={!isEditing}
+            isDarkMode={isDarkMode}
           />
 
           {/* Última atualização */}
-          <p className="text-sm text-gray-500 select-text italic">
+          <p className={`text-sm italic select-text ${
+            isDarkMode ? "text-gray-400" : "text-gray-500"
+          }`}>
             Última atualização do perfil: <strong>{lastUpdated}</strong>
           </p>
 
@@ -297,7 +328,11 @@ export default function AccountManagerPage() {
           <button
             type="button"
             onClick={() => setShowChangePassword((v) => !v)}
-            className="flex items-center gap-2 text-[#1565C0] font-semibold hover:text-[#0D47A1] transition"
+            className={`flex items-center gap-2 font-semibold transition ${
+              isDarkMode 
+                ? "text-blue-400 hover:text-blue-300" 
+                : "text-[#1565C0] hover:text-[#0D47A1]"
+            }`}
             aria-expanded={showChangePassword}
             aria-controls="change-password-section"
           >
@@ -315,7 +350,7 @@ export default function AccountManagerPage() {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden mt-4"
               >
-                <ChangePasswordForm />
+                <ChangePasswordForm isDarkMode={isDarkMode} />
               </motion.section>
             )}
           </AnimatePresence>
@@ -363,23 +398,32 @@ function Field({
   valid = true,
   errorMsg = "",
   disabled = false,
+  isDarkMode = false,
   ...props
 }) {
+  const iconColor = disabled 
+    ? "text-gray-400 opacity-50" 
+    : isDarkMode ? "text-gray-400" : "text-gray-500";
+  
+  const labelColor = disabled 
+    ? "text-gray-400" 
+    : isDarkMode ? "text-gray-300" : "text-gray-700";
+    
+  const inputBg = disabled 
+    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+    : isDarkMode ? "bg-gray-700 text-gray-200" : "bg-white text-gray-900";
+
   return (
     <div>
       <label
         htmlFor={id}
-        className={`block text-sm font-medium mb-1 select-none ${
-          disabled ? "text-gray-400" : "text-gray-700"
-        }`}
+        className={`block text-sm font-medium mb-1 select-none ${labelColor}`}
       >
         {label}
       </label>
       <div className="relative">
         <span
-          className={`absolute left-3 top-3 text-gray-400 select-none ${
-            disabled ? "opacity-50" : ""
-          }`}
+          className={`absolute left-3 top-3 select-none ${iconColor}`}
         >
           {icon}
         </span>
@@ -391,18 +435,16 @@ function Field({
           aria-invalid={!valid}
           aria-describedby={valid ? undefined : `${id}-error`}
           className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
-            valid ? "border-gray-300" : "border-red-500"
-          } focus:outline-none focus:ring-2 focus:ring-[#1565C0] ${
-            disabled
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-white text-gray-900"
-          } transition`}
+            valid ? (isDarkMode ? "border-gray-600" : "border-gray-300") : "border-red-500"
+          } focus:outline-none focus:ring-2 focus:ring-[#1565C0] ${inputBg} transition`}
         />
       </div>
       {!valid && (
         <p
           id={`${id}-error`}
-          className="mt-1 text-xs text-red-600 select-text font-semibold"
+          className={`mt-1 text-xs font-semibold select-text ${
+            isDarkMode ? "text-red-400" : "text-red-600"
+          }`}
         >
           {errorMsg}
         </p>
@@ -443,7 +485,7 @@ function Toast({ type = "success", message, onClose }) {
 }
 
 // Formulário simulado para alteração de senha (só UI)
-function ChangePasswordForm() {
+function ChangePasswordForm({ isDarkMode = false }) {
   const [currentPass, setCurrentPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmNewPass, setConfirmNewPass] = useState("");
@@ -500,7 +542,9 @@ function ChangePasswordForm() {
   return (
     <div className="space-y-4 mt-4" aria-label="Alterar senha">
       <div>
-        <label htmlFor="currentPass" className="block text-sm font-medium mb-1">
+        <label htmlFor="currentPass" className={`block text-sm font-medium mb-1 ${
+          isDarkMode ? "text-gray-300" : "text-gray-700"
+        }`}>
           Senha Atual
         </label>
         <input
@@ -509,11 +553,17 @@ function ChangePasswordForm() {
           value={currentPass}
           onChange={(e) => setCurrentPass(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#1565C0] focus:outline-none"
+          className={`w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#1565C0] focus:outline-none transition ${
+            isDarkMode 
+              ? "bg-gray-700 text-gray-200 border-gray-600" 
+              : "bg-white text-gray-900 border-gray-300"
+          }`}
         />
       </div>
       <div>
-        <label htmlFor="newPass" className="block text-sm font-medium mb-1">
+        <label htmlFor="newPass" className={`block text-sm font-medium mb-1 ${
+          isDarkMode ? "text-gray-300" : "text-gray-700"
+        }`}>
           Nova Senha
         </label>
         <input
@@ -522,13 +572,19 @@ function ChangePasswordForm() {
           value={newPass}
           onChange={(e) => setNewPass(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#1565C0] focus:outline-none"
+          className={`w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#1565C0] focus:outline-none transition ${
+            isDarkMode 
+              ? "bg-gray-700 text-gray-200 border-gray-600" 
+              : "bg-white text-gray-900 border-gray-300"
+          }`}
         />
       </div>
       <div>
         <label
           htmlFor="confirmNewPass"
-          className="block text-sm font-medium mb-1"
+          className={`block text-sm font-medium mb-1 ${
+            isDarkMode ? "text-gray-300" : "text-gray-700"
+          }`}
         >
           Confirmar Nova Senha
         </label>
@@ -538,7 +594,11 @@ function ChangePasswordForm() {
           value={confirmNewPass}
           onChange={(e) => setConfirmNewPass(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#1565C0] focus:outline-none"
+          className={`w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#1565C0] focus:outline-none transition ${
+            isDarkMode 
+              ? "bg-gray-700 text-gray-200 border-gray-600" 
+              : "bg-white text-gray-900 border-gray-300"
+          }`}
         />
       </div>
 
@@ -548,8 +608,12 @@ function ChangePasswordForm() {
         onClick={handleSubmit}
         className={`w-full py-3 rounded-lg font-semibold text-white transition ${
           canSubmit && !loading
-            ? "bg-[#1565C0] hover:bg-[#0D47A1]"
-            : "bg-gray-300 cursor-not-allowed"
+            ? isDarkMode 
+              ? "bg-blue-600 hover:bg-blue-500" 
+              : "bg-[#1565C0] hover:bg-[#0D47A1]"
+            : isDarkMode 
+              ? "bg-gray-600 cursor-not-allowed" 
+              : "bg-gray-300 cursor-not-allowed"
         }`}
       >
         {loading ? "Salvando..." : "Alterar Senha"}
@@ -557,7 +621,9 @@ function ChangePasswordForm() {
 
       {/* Dica de validação */}
       {!canSubmit && !loading && (
-        <p className="mt-2 text-sm text-red-600 text-center font-semibold">
+        <p className={`mt-2 text-sm text-center font-semibold ${
+          isDarkMode ? "text-red-400" : "text-red-600"
+        }`}>
           Preencha todos os campos corretamente. A nova senha precisa ter no
           mínimo 6 caracteres e coincidir com a confirmação.
         </p>
@@ -566,7 +632,9 @@ function ChangePasswordForm() {
       {msg && (
         <p
           className={`mt-3 text-center font-semibold ${
-            msg.type === "success" ? "text-green-600" : "text-red-600"
+            msg.type === "success" 
+              ? isDarkMode ? "text-green-400" : "text-green-600"
+              : isDarkMode ? "text-red-400" : "text-red-600"
           }`}
         >
           {msg.text}

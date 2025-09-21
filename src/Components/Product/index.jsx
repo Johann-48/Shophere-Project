@@ -13,8 +13,10 @@ import {
 } from "react-icons/fa";
 
 import ProductCard from "../ProductCard";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function ProductPage() {
+  const { isDarkMode } = useTheme();
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
@@ -94,16 +96,24 @@ export default function ProductPage() {
   );
 
   if (loading) {
-    return <div className="p-6 max-w-7xl mx-auto">Carregando produto...</div>;
+    return <div className={`p-6 max-w-7xl mx-auto ${
+      isDarkMode ? 'text-gray-200' : 'text-gray-900'
+    }`}>Carregando produto...</div>;
   }
 
   if (error) {
     return (
-      <div className="p-6 max-w-7xl mx-auto text-red-500">
+      <div className={`p-6 max-w-7xl mx-auto ${
+        isDarkMode ? 'text-red-400' : 'text-red-500'
+      }`}>
         {error}
         <button
           onClick={() => window.history.back()}
-          className="mt-4 inline-flex items-center gap-2 text-gray-700 hover:text-gray-900"
+          className={`mt-4 inline-flex items-center gap-2 transition ${
+            isDarkMode 
+              ? 'text-gray-300 hover:text-gray-100' 
+              : 'text-gray-700 hover:text-gray-900'
+          }`}
         >
           <FaArrowLeft /> Voltar
         </button>
@@ -112,11 +122,22 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto font-sans">
+    <div className={`min-h-screen ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900' 
+        : 'bg-gradient-to-br from-green-100 via-white to-green-50'
+    }`}>
+      <div className={`p-6 max-w-7xl mx-auto font-sans ${
+        isDarkMode ? 'text-gray-100' : 'text-gray-900'
+      }`}>
       <div className="flex items-center mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900"
+          className={`inline-flex items-center gap-2 transition ${
+            isDarkMode 
+              ? 'text-gray-300 hover:text-gray-100' 
+              : 'text-gray-700 hover:text-gray-900'
+          }`}
           type="button"
         >
           <FaArrowLeft /> Voltar
@@ -124,11 +145,15 @@ export default function ProductPage() {
       </div>
 
       {/* Loja clicável */}
-      <div className="mb-4 text-sm text-gray-600">
+      <div className={`mb-4 text-sm ${
+        isDarkMode ? 'text-gray-400' : 'text-gray-600'
+      }`}>
         Loja:{" "}
         <button
           onClick={() => navigate(`/commerce/${product.comercio.id}`)}
-          className="font-semibold hover:underline focus:outline-none"
+          className={`font-semibold hover:underline focus:outline-none ${
+            isDarkMode ? 'text-blue-300' : 'text-blue-600'
+          }`}
           type="button"
         >
           {product.comercio.nome}
@@ -142,7 +167,9 @@ export default function ProductPage() {
             <button
               key={idx}
               onClick={() => setMainImage(src)}
-              className="border rounded-lg p-1 cursor-pointer hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className={`border rounded-lg p-1 cursor-pointer hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                isDarkMode ? 'border-gray-600' : 'border-gray-300'
+              }`}
               type="button"
             >
               <img
@@ -156,7 +183,9 @@ export default function ProductPage() {
         </div>
 
         {/* Imagem principal */}
-        <div className="flex-1 flex justify-center items-center bg-gray-50 rounded-xl p-6 shadow-md">
+        <div className={`flex-1 flex justify-center items-center rounded-xl p-6 shadow-md ${
+          isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
+        }`}>
           <img
             src={mainImage}
             alt={product.title}
@@ -167,7 +196,9 @@ export default function ProductPage() {
 
         {/* Detalhes do produto */}
         <div className="md:w-[420px] space-y-6 flex flex-col">
-          <h1 className="text-3xl font-extrabold text-gray-900 leading-tight">
+          <h1 className={`text-3xl font-extrabold leading-tight ${
+            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+          }`}>
             {product.title}
           </h1>
 
@@ -175,7 +206,9 @@ export default function ProductPage() {
             <div className="flex text-yellow-400 text-lg">
               {renderStars(product.stars || 0)}
             </div>
-            <span className="text-gray-500 text-sm">
+            <span className={`text-sm ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}>
               ({product.reviewsCount || 0} Reviews)
             </span>
             <span
@@ -186,41 +219,63 @@ export default function ProductPage() {
               {product.stock ? "Em estoque" : "Indisponível"}
             </span>
             {product.stock && (
-              <span className="text-sm text-gray-600 ml-2">
+              <span className={`text-sm ml-2 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>
                 ({product.quantidade} disponíveis)
               </span>
             )}
           </div>
 
           <div className="flex items-center gap-4">
-            <p className="text-3xl font-bold text-blue-600">{product.price}</p>
+            <p className={`text-3xl font-bold ${
+              isDarkMode ? 'text-blue-400' : 'text-blue-600'
+            }`}>{product.price}</p>
             {product.oldPrice && (
-              <p className="text-gray-400 line-through text-lg">
+              <p className={`line-through text-lg ${
+                isDarkMode ? 'text-gray-500' : 'text-gray-400'
+              }`}>
                 {product.oldPrice}
               </p>
             )}
           </div>
 
-          <p className="text-gray-700 text-base leading-relaxed">
+          <p className={`text-base leading-relaxed ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
             {product.description}
           </p>
 
           <div className="flex items-center gap-4">
-            <span className="font-semibold text-gray-700 select-none">
+            <span className={`font-semibold select-none ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Quantidade:
             </span>
-            <div className="flex items-center border rounded-md overflow-hidden select-none">
+            <div className={`flex items-center border rounded-md overflow-hidden select-none ${
+              isDarkMode ? 'border-gray-600' : 'border-gray-300'
+            }`}>
               <button
                 onClick={decrement}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className={`px-4 py-2 transition focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                  isDarkMode 
+                    ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                }`}
                 type="button"
               >
                 -
               </button>
-              <span className="px-6 py-2 font-mono">{quantity}</span>
+              <span className={`px-6 py-2 font-mono ${
+                isDarkMode ? 'text-gray-100' : 'text-gray-800'
+              }`}>{quantity}</span>
               <button
                 onClick={increment}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className={`px-4 py-2 transition focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                  isDarkMode 
+                    ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                }`}
                 type="button"
               >
                 +
@@ -233,7 +288,11 @@ export default function ProductPage() {
               onClick={() =>
                 (window.location.href = `tel:${product.comercio.telefone}`)
               }
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className={`flex-1 py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 text-white ${
+                isDarkMode 
+                  ? 'bg-blue-600 hover:bg-blue-500 focus:ring-blue-500' 
+                  : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-600'
+              }`}
               type="button"
             >
               📞 Entrar em contato com a loja –{" "}
@@ -242,7 +301,11 @@ export default function ProductPage() {
             {product.barcode && (
               <button
                 onClick={() => navigate(`/comparar/${product.barcode}`)}
-                className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                className={`flex-1 py-3 rounded-md font-semibold shadow-md transition focus:outline-none focus:ring-2 ${
+                  isDarkMode 
+                    ? 'bg-yellow-500 hover:bg-yellow-400 text-black focus:ring-yellow-400' 
+                    : 'bg-yellow-400 hover:bg-yellow-500 text-black focus:ring-yellow-600'
+                }`}
                 type="button"
               >
                 Comparar Preços 🛍️
@@ -253,32 +316,52 @@ export default function ProductPage() {
               aria-label={
                 favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"
               }
-              className={`w-14 h-14 flex justify-center items-center border rounded-md transition ${
+              className={`w-14 h-14 flex justify-center items-center border rounded-md transition focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                 favorited
-                  ? "text-blue-600 bg-blue-100"
-                  : "text-gray-400 hover:text-blue-600 hover:bg-blue-100"
-              } focus:outline-none focus:ring-2 focus:ring-blue-600`}
+                  ? isDarkMode 
+                    ? "text-blue-400 bg-blue-900 border-blue-600"
+                    : "text-blue-600 bg-blue-100 border-blue-300"
+                  : isDarkMode 
+                    ? "text-gray-400 hover:text-blue-400 hover:bg-blue-900 border-gray-600"
+                    : "text-gray-400 hover:text-blue-600 hover:bg-blue-100 border-gray-300"
+              }`}
               type="button"
             >
               {favorited ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
             </button>
           </div>
 
-          <div className="border rounded-lg divide-y divide-gray-200 shadow-sm mt-6">
+          <div className={`border rounded-lg divide-y shadow-sm mt-6 ${
+            isDarkMode 
+              ? 'border-gray-600 divide-gray-600' 
+              : 'border-gray-200 divide-gray-200'
+          }`}>
             <div className="flex items-center gap-4 p-4">
-              <FaTruck className="text-2xl text-gray-700" />
+              <FaTruck className={`text-2xl ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-700'
+              }`} />
               <div>
-                <p className="font-semibold text-gray-800">Entrega Grátis</p>
-                <p className="text-gray-500 text-sm">
+                <p className={`font-semibold ${
+                  isDarkMode ? 'text-gray-200' : 'text-gray-800'
+                }`}>Entrega Grátis</p>
+                <p className={`text-sm ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
                   Receba em até 7 dias úteis
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4">
-              <FaUndo className="text-2xl text-gray-700" />
+              <FaUndo className={`text-2xl ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-700'
+              }`} />
               <div>
-                <p className="font-semibold text-gray-800">Devolução</p>
-                <p className="text-gray-500 text-sm">
+                <p className={`font-semibold ${
+                  isDarkMode ? 'text-gray-200' : 'text-gray-800'
+                }`}>Devolução</p>
+                <p className={`text-sm ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
                   Grátis em até 15 dias depois da compra
                 </p>
               </div>
@@ -290,7 +373,9 @@ export default function ProductPage() {
 
       <section className="mt-16">
         <div className="flex items-center justify-between mb-6 select-none">
-          <h3 className="text-2xl font-semibold">Avaliações dos clientes</h3>
+          <h3 className={`text-2xl font-semibold ${
+            isDarkMode ? 'text-gray-200' : 'text-gray-900'
+          }`}>Avaliações dos clientes</h3>
           {/* Botão para escrever avaliação */}
           <Link
             to={`/review/${product.id}`}
@@ -303,22 +388,34 @@ export default function ProductPage() {
         {product.reviewsCount > 0 ? (
           <div className="space-y-6">
             {product.reviews.map((rev, i) => (
-              <div key={i} className="border-b pb-4">
+              <div key={i} className={`border-b pb-4 ${
+                isDarkMode ? 'border-gray-600' : 'border-gray-200'
+              }`}>
                 <div className="flex items-center mb-1">
                   {renderStars(rev.note)}
-                  <span className="ml-2 text-sm text-gray-500">{rev.user}</span>
+                  <span className={`ml-2 text-sm ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`}>{rev.user}</span>
                 </div>
-                <p className="text-gray-700">{rev.content}</p>
+                <p className={`${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>{rev.content}</p>
               </div>
             ))}
           </div>
         ) : (
           <div className="flex flex-col items-center space-y-4">
-            <p className="text-gray-500">Nenhuma avaliação disponível.</p>
+            <p className={`${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}>Nenhuma avaliação disponível.</p>
             {/* Também podemos sugerir escrever a primeira avaliação aqui */}
             <Link
               to={`/review/${product.id}`}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className={`px-4 py-2 text-white rounded-lg transition ${
+                isDarkMode 
+                  ? 'bg-blue-600 hover:bg-blue-500' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
             >
               Seja o primeiro a avaliar
             </Link>
@@ -327,7 +424,9 @@ export default function ProductPage() {
       </section>
       {/* Relacionados */}
       <section className="mt-16">
-        <h3 className="text-2xl font-semibold mb-6 select-none">
+        <h3 className={`text-2xl font-semibold mb-6 select-none ${
+          isDarkMode ? 'text-gray-200' : 'text-gray-900'
+        }`}>
           Produtos relacionados
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
@@ -342,10 +441,13 @@ export default function ProductPage() {
               />
             ))
           ) : (
-            <p className="text-gray-500">Sem produtos relacionados.</p>
+            <p className={`${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}>Sem produtos relacionados.</p>
           )}
         </div>
       </section>
+      </div>
     </div>
   );
 }

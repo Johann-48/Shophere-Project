@@ -52,7 +52,7 @@ export default function ReviewForm() {
   };
 
   return (
-    <div className="min-h-screen py-8 bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 text-gray-800 dark:text-gray-100">
+    <div className="min-h-screen py-8 bg-gradient-to-br from-green-100 via-white to-green-50 text-gray-800 dark:text-gray-100">
       <div className="container mx-auto px-4 max-w-lg">
         <motion.form
           onSubmit={handleSubmit(submit)}

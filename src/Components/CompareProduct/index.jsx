@@ -43,7 +43,7 @@ const CompareProduct = () => {
   const produtoPrincipal = products[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 text-gray-900 font-inter px-6 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-50 text-gray-900 font-inter px-6 py-10">
       <div className="max-w-7xl mx-auto bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl">
         <button
           onClick={() => navigate(-1)}

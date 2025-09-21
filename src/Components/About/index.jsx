@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const About = () => {
+  const { isDarkMode } = useTheme();
   const cards = [
     {
       title: "🌟 Missão",
@@ -55,11 +57,17 @@ const About = () => {
   const [activeCard, setActiveCard] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8 select-none font-inter">
+    <div className={`min-h-screen py-16 px-4 sm:px-6 lg:px-8 select-none font-inter ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100' 
+        : 'bg-gradient-to-br from-green-100 via-white to-green-50'
+    }`}>
       <div className="max-w-7xl mx-auto">
         {/* Título principal */}
         <motion.h1
-          className="text-5xl sm:text-6xl font-extrabold text-center text-[#282933] mb-12 tracking-tight relative cursor-pointer select-none"
+          className={`text-5xl sm:text-6xl font-extrabold text-center mb-12 tracking-tight relative cursor-pointer select-none ${
+            isDarkMode ? 'text-gray-100' : 'text-[#282933]'
+          }`}
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -74,14 +82,16 @@ const About = () => {
 
         {/* Descrição da empresa */}
         <motion.p
-          className="max-w-3xl mx-auto text-center text-lg sm:text-xl text-black font-medium leading-relaxed mb-20 font-sans"
+          className={`max-w-3xl mx-auto text-center text-lg sm:text-xl font-medium leading-relaxed mb-20 font-sans ${
+            isDarkMode ? 'text-gray-200' : 'text-black'
+          }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
           Bem-vindo ao{" "}
           <strong
-            className="font-black text-black"
+            className={`font-black ${isDarkMode ? 'text-gray-100' : 'text-black'}`}
             style={{ textShadow: "1px 1px 2px rgba(21, 101, 192, 0.4)" }}
           >
             ShopHere
@@ -97,11 +107,16 @@ const About = () => {
             <motion.div
               key={index}
               onClick={() => setActiveCard(index === activeCard ? null : index)}
-              className={`relative cursor-pointer bg-white rounded-2xl shadow-md p-8 border border-transparent transform transition-all duration-300 ease-in-out origin-center
-                hover:shadow-lg hover:border-[#43444F]
+              className={`relative cursor-pointer rounded-2xl shadow-md p-8 border border-transparent transform transition-all duration-300 ease-in-out origin-center
+                ${isDarkMode 
+                  ? 'bg-gray-800 hover:shadow-lg hover:border-gray-600' 
+                  : 'bg-white hover:shadow-lg hover:border-[#43444F]'
+                }
                 ${
                   activeCard === index
-                    ? "border-[#1565C0] shadow-xl scale-[1.03] z-20"
+                    ? isDarkMode 
+                      ? "border-blue-400 shadow-xl scale-[1.03] z-20"
+                      : "border-[#1565C0] shadow-xl scale-[1.03] z-20"
                     : "scale-100"
                 }
               `}
@@ -113,11 +128,15 @@ const About = () => {
             >
               <div className="flex items-center space-x-5 mb-4">
                 <div className="text-6xl">{card.icon}</div>
-                <h3 className="text-2xl font-extrabold text-[#282933]">
+                <h3 className={`text-2xl font-extrabold ${
+                  isDarkMode ? 'text-gray-100' : 'text-[#282933]'
+                }`}>
                   {card.title}
                 </h3>
               </div>
-              <p className="text-[#43444F] text-base font-medium leading-relaxed">
+              <p className={`text-base font-medium leading-relaxed ${
+                isDarkMode ? 'text-gray-300' : 'text-[#43444F]'
+              }`}>
                 {card.text}
               </p>
 
@@ -129,7 +148,9 @@ const About = () => {
                     : { opacity: 0, height: 0, marginTop: 0 }
                 }
                 transition={{ duration: 0.3 }}
-                className="text-[#282933] text-sm font-normal overflow-hidden"
+                className={`text-sm font-normal overflow-hidden ${
+                  isDarkMode ? 'text-gray-200' : 'text-[#282933]'
+                }`}
               >
                 {card.detail}
               </motion.div>
@@ -139,7 +160,11 @@ const About = () => {
 
         {/* Título da equipe */}
         <motion.h2
-          className="text-3xl sm:text-4xl font-semibold text-center text-[#43444F] mb-16 border-b-4 border-[#43444F] pb-3 max-w-max mx-auto cursor-default select-none tracking-wide"
+          className={`text-3xl sm:text-4xl font-semibold text-center mb-16 border-b-4 pb-3 max-w-max mx-auto cursor-default select-none tracking-wide ${
+            isDarkMode 
+              ? 'text-gray-200 border-gray-400' 
+              : 'text-[#43444F] border-[#43444F]'
+          }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.45 }}
@@ -152,7 +177,11 @@ const About = () => {
           {equipe.map((membro, index) => (
             <motion.div
               key={index}
-              className="relative bg-white rounded-3xl border border-[#43444F] p-8 shadow-md cursor-pointer overflow-hidden group transition-shadow duration-300 hover:shadow-2xl"
+              className={`relative rounded-3xl p-8 shadow-md cursor-pointer overflow-hidden group transition-shadow duration-300 hover:shadow-2xl ${
+                isDarkMode 
+                  ? 'bg-gray-800 border border-gray-600' 
+                  : 'bg-white border border-[#43444F]'
+              }`}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + index * 0.15 }}
@@ -161,12 +190,18 @@ const About = () => {
               <img
                 src={membro.imagem}
                 alt={membro.nome}
-                className="w-28 h-28 rounded-full mx-auto mb-6 object-cover ring-4 ring-[#43444F] transition-transform duration-500 group-hover:scale-110"
+                className={`w-28 h-28 rounded-full mx-auto mb-6 object-cover ring-4 transition-transform duration-500 group-hover:scale-110 ${
+                  isDarkMode ? 'ring-gray-400' : 'ring-[#43444F]'
+                }`}
               />
-              <h4 className="text-center text-2xl font-extrabold text-[#282933]">
+              <h4 className={`text-center text-2xl font-extrabold ${
+                isDarkMode ? 'text-gray-100' : 'text-[#282933]'
+              }`}>
                 {membro.nome}
               </h4>
-              <p className="text-center text-sm text-[#43444F] font-semibold mb-6">
+              <p className={`text-center text-sm font-semibold mb-6 ${
+                isDarkMode ? 'text-gray-300' : 'text-[#43444F]'
+              }`}>
                 {membro.cargo}
               </p>
 
@@ -174,16 +209,24 @@ const About = () => {
                 initial={{ opacity: 0, y: 10 }}
                 whileHover={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-3xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto flex flex-col justify-center items-center text-center"
+                className={`absolute inset-0 backdrop-blur-sm rounded-3xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto flex flex-col justify-center items-center text-center ${
+                  isDarkMode ? 'bg-gray-900/95' : 'bg-white/95'
+                }`}
               >
-                <p className="text-[#43444F] text-sm mb-4 font-medium">
+                <p className={`text-sm mb-4 font-medium ${
+                  isDarkMode ? 'text-gray-200' : 'text-[#43444F]'
+                }`}>
                   {membro.bio}
                 </p>
                 <a
                   href={membro.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2 bg-[#282933] text-white rounded-full shadow-md hover:bg-[#43444F] transition"
+                  className={`inline-flex items-center gap-2 px-5 py-2 text-white rounded-full shadow-md transition ${
+                    isDarkMode 
+                      ? 'bg-blue-600 hover:bg-blue-500' 
+                      : 'bg-[#282933] hover:bg-[#43444F]'
+                  }`}
                 >
                   <svg
                     className="w-5 h-5"

@@ -11,9 +11,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "../ProductCard";
 import CommerceCard from "../CommerceCard";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
   const [categories, setCategories] = useState([]);
   const [baseProducts, setBaseProducts] = useState([]);
   const [products, setProducts] = useState([]);
@@ -149,9 +151,14 @@ export default function Home() {
     .sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0))
     .slice(0, 4);
 
+  // Define o gradiente baseado no tema
+  const backgroundGradient = isDarkMode 
+    ? 'bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100'
+    : 'bg-gradient-to-br from-green-100 via-white to-green-50';
+
   return (
     <div
-      className="min-h-screen font-sans text-gray-900 bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100"
+      className={`min-h-screen font-sans text-gray-900 ${backgroundGradient}`}
     >
       {/* Banner */}
 

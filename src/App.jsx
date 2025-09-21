@@ -1,5 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 import ContactSellerPage from "./Pages/ContactSellerPage";
 import HomePage from "./Pages/HomePage";
@@ -22,7 +23,8 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
   return (
-    <Routes>
+    <ThemeProvider>
+      <Routes>
       {/* Rotas públicas */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -58,6 +60,7 @@ function App() {
       {/* fallback */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
+    </ThemeProvider>
   );
 }
 

@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function Signup({ goBackToLogin }) {
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -82,8 +84,12 @@ export default function Signup({ goBackToLogin }) {
     }
   };
 
+  const backgroundGradient = isDarkMode 
+    ? 'bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100'
+    : 'bg-gradient-to-br from-green-100 via-white to-green-50';
+
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 px-4 py-12">
+    <main className={`flex items-center justify-center min-h-screen ${backgroundGradient} px-4 py-12`}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}

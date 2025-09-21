@@ -3,11 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { useTheme } from "../../contexts/ThemeContext";
+import ThemeToggle from "../ThemeToggle";
 
 export default function Header() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState(null);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -59,13 +62,19 @@ export default function Header() {
     ? [...defaultLinks, ...authLinks]
     : [...defaultLinks, ...guestLinks];
 
+  // Define as cores baseadas no tema
+  const headerBg = isDarkMode ? 'bg-black shadow-md' : 'bg-white shadow-lg';
+  const logoColor = isDarkMode ? 'text-white' : 'text-gray-900';
+  const linkColor = isDarkMode ? 'text-gray-300' : 'text-gray-600';
+  const iconColor = isDarkMode ? 'text-white' : 'text-gray-700';
+
   return (
-    <header className="w-full bg-black shadow-md">
+    <header className={`w-full ${headerBg}`}>
       <div className="max-w-6xl mx-auto flex items-center justify-between py-4 px-6">
         {/* Logo */}
         <div className="text-3xl font-extrabold tracking-wide">
           <Link to="/">
-            <span className="text-white">SHOP</span>
+            <span className={logoColor}>SHOP</span>
             <span className="text-[#0D47A1]">HERE</span>
           </Link>
         </div>
@@ -81,7 +90,7 @@ export default function Header() {
               {link.action ? (
                 <button
                   onClick={link.action}
-                  className={`text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
+                  className={`${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
                     link.underline ? "underline font-semibold" : ""
                   }`}
                 >
@@ -90,7 +99,7 @@ export default function Header() {
               ) : (
                 <Link
                   to={link.to}
-                  className={`text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
+                  className={`${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
                     link.underline ? "underline font-semibold" : ""
                   }`}
                 >
@@ -99,6 +108,9 @@ export default function Header() {
               )}
             </motion.div>
           ))}
+          
+          {/* Theme Toggle */}
+          <ThemeToggle />
         </nav>
 
         {/* Search */}
@@ -113,9 +125,10 @@ export default function Header() {
         </div>
 
         {/* Mobile menu button */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center space-x-3">
+          <ThemeToggle />
           <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <FiX size={24} className="text-white" /> : <FiMenu size={24} className="text-white" />}
+            {isOpen ? <FiX size={24} className={iconColor} /> : <FiMenu size={24} className={iconColor} />}
           </button>
         </div>
       </div>
@@ -124,7 +137,7 @@ export default function Header() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden bg-black border-t border-gray-700 px-6 py-4 space-y-3"
+            className={`md:hidden ${isDarkMode ? 'bg-black border-gray-700' : 'bg-white border-gray-200'} border-t px-6 py-4 space-y-3`}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -137,7 +150,7 @@ export default function Header() {
                       link.action();
                       setIsOpen(false);
                     }}
-                    className={`block w-full text-left text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
+                    className={`block w-full text-left ${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
                       link.underline ? "underline font-semibold" : ""
                     }`}
                   >
@@ -147,7 +160,7 @@ export default function Header() {
                   <Link
                     to={link.to}
                     onClick={() => setIsOpen(false)}
-                    className={`block text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
+                    className={`block ${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
                       link.underline ? "underline font-semibold" : ""
                     }`}
                   >
