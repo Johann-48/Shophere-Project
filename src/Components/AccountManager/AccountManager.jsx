@@ -173,13 +173,13 @@ export default function AccountManagerPage() {
 
   if (!user)
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white text-white text-lg animate-pulse">
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 text-white text-lg animate-pulse">
         Carregando perfil...
       </div>
     );
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white flex items-center justify-center px-4 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 flex items-center justify-center px-4 py-12">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

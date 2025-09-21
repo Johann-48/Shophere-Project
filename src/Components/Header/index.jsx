@@ -60,12 +60,12 @@ export default function Header() {
     : [...defaultLinks, ...guestLinks];
 
   return (
-    <header className="w-full bg-white shadow-md">
+    <header className="w-full bg-black shadow-md">
       <div className="max-w-6xl mx-auto flex items-center justify-between py-4 px-6">
         {/* Logo */}
         <div className="text-3xl font-extrabold tracking-wide">
           <Link to="/">
-            <span className="text-black">SHOP</span>
+            <span className="text-white">SHOP</span>
             <span className="text-[#0D47A1]">HERE</span>
           </Link>
         </div>
@@ -81,7 +81,7 @@ export default function Header() {
               {link.action ? (
                 <button
                   onClick={link.action}
-                  className={`text-gray-600 hover:text-[#0D47A1] transition-all duration-200 ${
+                  className={`text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
                     link.underline ? "underline font-semibold" : ""
                   }`}
                 >
@@ -90,7 +90,7 @@ export default function Header() {
               ) : (
                 <Link
                   to={link.to}
-                  className={`text-gray-600 hover:text-[#0D47A1] transition-all duration-200 ${
+                  className={`text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
                     link.underline ? "underline font-semibold" : ""
                   }`}
                 >
@@ -115,7 +115,7 @@ export default function Header() {
         {/* Mobile menu button */}
         <div className="md:hidden">
           <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            {isOpen ? <FiX size={24} className="text-white" /> : <FiMenu size={24} className="text-white" />}
           </button>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function Header() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden bg-white border-t border-gray-200 px-6 py-4 space-y-3"
+            className="md:hidden bg-black border-t border-gray-700 px-6 py-4 space-y-3"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -137,7 +137,7 @@ export default function Header() {
                       link.action();
                       setIsOpen(false);
                     }}
-                    className={`block w-full text-left text-gray-700 hover:text-[#0D47A1] transition-all duration-200 ${
+                    className={`block w-full text-left text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
                       link.underline ? "underline font-semibold" : ""
                     }`}
                   >
@@ -147,7 +147,7 @@ export default function Header() {
                   <Link
                     to={link.to}
                     onClick={() => setIsOpen(false)}
-                    className={`block text-gray-700 hover:text-[#0D47A1] transition-all duration-200 ${
+                    className={`block text-gray-300 hover:text-[#0D47A1] transition-all duration-200 ${
                       link.underline ? "underline font-semibold" : ""
                     }`}
                   >
@@ -161,9 +161,9 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Buscar..."
-                className="w-full mt-2 border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0D47A1]"
+                className="w-full mt-2 border border-gray-600 rounded-full py-2 pl-4 pr-10 bg-gray-800 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0D47A1]"
               />
-              <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#0D47A1] cursor-pointer" />
+              <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#0D47A1] cursor-pointer" />
             </div>
           </motion.div>
         )}

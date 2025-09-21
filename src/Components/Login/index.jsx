@@ -49,7 +49,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
   };
 
   return (
-    <main className="flex-1 bg-gradient-to-r from-blue-100 to-white py-16 px-6 min-h-screen">
+    <main className="flex-1 bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 py-16 px-6 min-h-screen">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         {/* Imagem lateral */}
         <motion.div
@@ -59,7 +59,7 @@ export default function Login({ goToForgotPassword, goToSignUp, goToSeller }) {
           className="hidden md:block"
         >
           <img
-            src="https://exxacta.com.br/wp-content/uploads/2023/11/apoie-o-conceito-de-negocio-local_52683-41530.jpg"
+            src="https://sdmntprwestus2.oaiusercontent.com/files/00000000-af5c-61f8-bb80-12e433b100c0/raw?se=2025-09-21T19%3A16%3A49Z&sp=r&sv=2024-08-04&sr=b&scid=666a61b7-dd5c-5597-902c-0fb7f9a98b30&skoid=60f2aa1f-3685-43ee-be37-d8c8d08d5a64&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-09-20T20%3A07%3A50Z&ske=2025-09-21T20%3A07%3A50Z&sks=b&skv=2024-08-04&sig=0w6ozFP7uG3svJf1MSXLbuKw92k%2B4Hdk8cNzLynOpbA%3D"
             alt="Login Visual"
             className="w-full rounded-3xl shadow-lg"
             style={{ borderRadius: "1.5rem" }}

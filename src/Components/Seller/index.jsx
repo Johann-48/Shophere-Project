@@ -61,7 +61,7 @@ const Seller = ({ goBackToLogin }) => {
   };
 
   return (
-    <main className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white py-16 px-6">
+    <main className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 py-16 px-6">
       <div className="w-full max-w-5xl bg-white shadow-2xl rounded-3xl p-10 border border-[#43444F] relative">
         <button
           onClick={() => navigate("/login")}

@@ -36,7 +36,7 @@ export default function LojaDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center transition-all duration-500 bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white p-16 px-6">
+    <div className="min-h-screen flex flex-col items-center transition-all duration-500 bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 p-16 px-6">
       {/* Logo da Loja */}
       <div className="w-full max-w-4xl relative flex items-center justify-center mb-6">
         <div className="relative group">

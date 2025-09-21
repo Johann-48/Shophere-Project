@@ -34,7 +34,7 @@ export default function ForgotPassword({ goBackToLogin }) {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#1565C0] to-[#90CAF9] px-4 py-12 transition-colors">
+    <main className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 px-4 py-12 transition-colors">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}

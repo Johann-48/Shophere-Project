@@ -55,7 +55,7 @@ const About = () => {
   const [activeCard, setActiveCard] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white py-16 px-4 sm:px-6 lg:px-8 select-none font-inter">
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8 select-none font-inter">
       <div className="max-w-7xl mx-auto">
         {/* Título principal */}
         <motion.h1

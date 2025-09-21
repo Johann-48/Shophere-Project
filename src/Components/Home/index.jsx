@@ -151,8 +151,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen font-sans text-gray-900"
-      style={{ background: "linear-gradient(to bottom, #7eaafc, #ffffff)" }}
+      className="min-h-screen font-sans text-gray-900 bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100"
     >
       {/* Banner */}
 

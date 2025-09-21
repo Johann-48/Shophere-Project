@@ -83,7 +83,7 @@ export default function Signup({ goBackToLogin }) {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#1565C0] via-[#90CAF9] to-white px-4 py-12">
+    <main className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100 px-4 py-12">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
