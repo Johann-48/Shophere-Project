@@ -15,7 +15,10 @@ import { useTheme } from "../../contexts/ThemeContext";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, dark, light } = useTheme();
+  
+  // Get current theme
+  const currentTheme = isDarkMode ? dark : light;
   const [categories, setCategories] = useState([]);
   const [baseProducts, setBaseProducts] = useState([]);
   const [products, setProducts] = useState([]);
@@ -151,41 +154,36 @@ export default function Home() {
     .sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0))
     .slice(0, 4);
 
-  // Define o gradiente baseado no tema
-  const backgroundGradient = isDarkMode 
-    ? 'bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100'
-    : 'bg-gradient-to-br from-green-100 via-white to-green-50';
-
   return (
-    <div
-      className={`min-h-screen font-sans text-gray-900 ${backgroundGradient}`}
-    >
+    <div className={`min-h-screen font-sans ${currentTheme.textPrimary} ${currentTheme.background} animate-fadeInUp`}>
       {/* Banner */}
 
       {/* Comércios */}
-      <section className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-blue-500">🏬 Comércios</h2>
-          <Link
-            to="/commerces/search"
-            className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-full transition"
-          >
-            Pesquisar Comércio
-          </Link>
+      <section className="px-4 md:px-6 py-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold gradient-text">🏬 Comércios</h2>
+            <Link
+              to="/commerces/search"
+              className={`text-sm text-white ${currentTheme.button} px-4 py-2 rounded-lg transition-all duration-200 btn-primary focus-ring`}
+            >
+              Pesquisar Comércio
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {(showAllCommerces ? commerces : commerces.slice(0, 8)).map((c) => (
-            <motion.div
-              key={c.id}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 220, damping: 18 }}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
-            >
-              <CommerceCard commerce={c} />
-            </motion.div>
-          ))}
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {(showAllCommerces ? commerces : commerces.slice(0, 8)).map((c) => (
+              <motion.div
+                key={c.id}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 220, damping: 18 }}
+              >
+                <CommerceCard commerce={c} />
+              </motion.div>
+            ))}
         </div>
 
         {commerces.length > 8 && (
@@ -194,7 +192,7 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowAllCommerces((prev) => !prev)}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 font-semibold"
+              className={`px-6 py-3 ${currentTheme.button} text-white rounded-lg shadow-lg transition-all duration-300 font-semibold btn-primary`}
             >
               {showAllCommerces
                 ? "🔼 Mostrar Menos"
@@ -202,56 +200,58 @@ export default function Home() {
             </motion.button>
           </div>
         )}
+        </div>
       </section>
 
       {/* Categorias */}
-      <section className="p-6" style={{ background: "#e3f2fd" }}>
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">
-          🗂 Navegue por Categorias
-        </h2>
+      <section className="px-4 md:px-6 py-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`text-2xl md:text-3xl font-bold mb-6 ${currentTheme.textPrimary}`}>
+            🗂 Navegue por Categorias
+          </h2>
 
-        <div className="flex overflow-x-auto gap-4 pb-4 px-1 hide-scrollbar">
-          {categories.map((cat) => (
-            <motion.div
-              key={cat.id}
-              onClick={() => handleCategorySelect(cat.id)}
-              className="min-w-[140px] rounded-xl shadow-lg flex flex-col items-center justify-center text-center px-4 py-5 text-sm font-semibold cursor-pointer border-2 border-transparent hover:border-blue-400 transition"
-              initial={false}
-              animate={{
-                scale: selectedCategory === cat.id ? 1.05 : 1,
-                backgroundColor:
-                  selectedCategory === cat.id ? "#dbeafe" : "#FFF",
-              }}
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 200, damping: 25 }}
-            >
-              <div className="text-3xl mb-2">🗂</div>
-              {cat.nome}
-            </motion.div>
-          ))}
+          <div className="flex overflow-x-auto gap-4 pb-4 px-1 hide-scrollbar">
+            {categories.map((cat) => (
+              <motion.div
+                key={cat.id}
+                onClick={() => handleCategorySelect(cat.id)}
+                className={`min-w-[140px] rounded-xl flex flex-col items-center justify-center text-center px-4 py-5 text-sm font-semibold cursor-pointer border-2 transition-all duration-200 card-hover ${
+                  selectedCategory === cat.id 
+                    ? `${currentTheme.accent} text-white border-blue-400` 
+                    : `${currentTheme.card} ${currentTheme.text} border-transparent hover:border-blue-400`
+                }`}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 200, damping: 25 }}
+              >
+                <div className="text-3xl mb-2">🗂</div>
+                {cat.nome}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
       {/* Produtos em Destaque */}
-      <section className="p-6">
-        <div className="flex items-center justify-between mb-4flex-wrap gap-4">
-          <h2 className="text-2xl font-bold text-blue-500">
-            ✨ Produtos em Destaque
-          </h2>
-          <div className="flex gap-2">
-            <button
-              onClick={toggleFilters}
-              className="flex items-center gap-2 text-sm text-white bg-gray-700 hover:bg-gray-800 px-4 py-2 rounded-full transition"
-            >
-              <FiFilter /> Filtrar
-            </button>
-            <Link
-              to="/search"
-              className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-full transition"
-            >
-              🔍 Pesquisar
-            </Link>
+      <section className="px-4 md:px-6 py-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <h2 className="text-2xl md:text-3xl font-bold gradient-text">
+              ✨ Produtos em Destaque
+            </h2>
+            <div className="flex gap-2">
+              <button
+                onClick={toggleFilters}
+                className={`flex items-center gap-2 text-sm text-white ${currentTheme.secondary} px-4 py-2 rounded-lg transition-all duration-200 btn-primary focus-ring`}
+              >
+                <FiFilter /> Filtrar
+              </button>
+              <Link
+                to="/search"
+                className={`text-sm text-white ${currentTheme.button} px-4 py-2 rounded-lg transition-all duration-200 btn-primary focus-ring`}
+              >
+                🔍 Pesquisar
+              </Link>
+            </div>
           </div>
-        </div>
         {/* Filtros visíveis apenas se showFilters === true */}
         <AnimatePresence>
           {showFilters && (
@@ -260,28 +260,28 @@ export default function Home() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white border rounded-2xl shadow-lg p-6 mb-6"
+              className={`${currentTheme.card} border rounded-2xl shadow-lg p-6 mb-6 glass`}
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold text-gray-800">
+                <h3 className={`text-xl font-semibold ${currentTheme.textPrimary}`}>
                   🎯 Filtros Avançados
                 </h3>
                 <button
                   onClick={toggleFilters}
-                  className="text-gray-500 hover:text-blue-600"
+                  className={`${currentTheme.text} hover:text-blue-400 transition-colors focus-ring rounded`}
                 >
                   <FiXCircle size={20} />
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="flex flex-col">
-                  <label className="mb-1 text-sm font-medium text-gray-600">
+                  <label className={`mb-1 text-sm font-medium ${currentTheme.text}`}>
                     Ordenar por
                   </label>
                   <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    className={`p-3 border rounded-lg focus-ring transition-colors ${currentTheme.card} ${currentTheme.text}`}
                   >
                     <option value="">Selecione</option>
                     <option value="high">Mais caro</option>
@@ -290,7 +290,7 @@ export default function Home() {
                   </select>
                 </div>
                 <div className="flex flex-col">
-                  <label className="mb-1 text-sm font-medium text-gray-600 flex items-center gap-1">
+                  <label className={`mb-1 text-sm font-medium ${currentTheme.text} flex items-center gap-1`}>
                     <FiDollarSign /> Preço mínimo
                   </label>
                   <input
@@ -298,11 +298,11 @@ export default function Home() {
                     placeholder="R$ 0,00"
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
-                    className="p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    className={`p-3 border rounded-lg focus-ring transition-colors ${currentTheme.card} ${currentTheme.text}`}
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className="mb-1 text-sm font-medium text-gray-600 flex items-center gap-1">
+                  <label className={`mb-1 text-sm font-medium ${currentTheme.text} flex items-center gap-1`}>
                     <FiDollarSign /> Preço máximo
                   </label>
                   <input
@@ -310,12 +310,12 @@ export default function Home() {
                     placeholder="R$ 0,00"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
-                    className="p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    className={`p-3 border rounded-lg focus-ring transition-colors ${currentTheme.card} ${currentTheme.text}`}
                   />
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="mb-1 text-sm font-medium text-gray-600 flex items-center gap-1">
+                  <label className={`mb-1 text-sm font-medium ${currentTheme.text} flex items-center gap-1`}>
                     <FiStar /> Estrelas mínimas
                   </label>
                   <input
@@ -325,7 +325,7 @@ export default function Home() {
                     placeholder="0-5"
                     value={minRating}
                     onChange={(e) => setMinRating(e.target.value)}
-                    className="p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    className={`p-3 border rounded-lg focus-ring transition-colors ${currentTheme.card} ${currentTheme.text}`}
                   />
                 </div>
               </div>
@@ -339,13 +339,13 @@ export default function Home() {
                     setProducts(allProducts);
                     setShowFilters(false);
                   }}
-                  className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                  className={`px-5 py-2 ${currentTheme.secondary} ${currentTheme.text} rounded-lg transition-all duration-200 btn-primary focus-ring`}
                 >
                   Limpar
                 </button>
                 <button
                   onClick={applyFilters}
-                  className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  className={`px-5 py-2 ${currentTheme.button} text-white rounded-lg transition-all duration-200 btn-primary focus-ring`}
                 >
                   Aplicar
                 </button>
@@ -370,21 +370,24 @@ export default function Home() {
             </motion.div>
           ))}
         </div>
+        </div>
       </section>
       {/* Melhor Avaliados */}
-      <section className="p-6">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">
-          ⭐ Melhor Avaliados
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {bestRated.map((product) => (
-            <ProductCard
-              key={`bestRated-${product.id}`}
-              product={product}
-              isLiked={liked.includes(product.id)}
-              onToggleLike={toggleLike}
-            />
-          ))}
+      <section className="px-4 md:px-6 py-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`text-2xl md:text-3xl font-bold mb-6 ${currentTheme.textPrimary}`}>
+            ⭐ Melhor Avaliados
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {bestRated.map((product) => (
+              <ProductCard
+                key={`bestRated-${product.id}`}
+                product={product}
+                isLiked={liked.includes(product.id)}
+                onToggleLike={toggleLike}
+              />
+            ))}
+          </div>
         </div>
       </section>
     </div>

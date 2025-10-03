@@ -33,23 +33,37 @@ export const ThemeProvider = ({ children }) => {
   const theme = {
     isDarkMode,
     toggleTheme,
-    // Cores para modo escuro (atual)
+    // Cores para modo escuro (melhorado para visibilidade)
     dark: {
-      background: 'bg-gradient-to-br from-gray-800 via-blue-50 to-gray-100',
-      header: 'bg-black',
-      footer: 'bg-gray-900',
-      text: 'text-gray-300',
+      background: 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900',
+      header: 'bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50',
+      footer: 'bg-slate-900',
+      text: 'text-slate-200',
       textPrimary: 'text-white',
-      card: 'bg-white/80',
+      textSecondary: 'text-slate-400',
+      card: 'bg-slate-800/90 backdrop-blur-sm border border-slate-600/50',
+      accent: 'bg-gradient-to-r from-blue-500 to-blue-600',
+      button: 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800',
+      secondary: 'bg-slate-700/80 hover:bg-slate-600/80 text-slate-200',
+      success: 'bg-gradient-to-r from-blue-500 to-cyan-500',
+      warning: 'bg-gradient-to-r from-blue-400 to-indigo-500',
+      danger: 'bg-gradient-to-r from-blue-600 to-purple-600',
     },
-    // Cores para modo claro (novo)
+    // Cores para modo claro (melhorado)
     light: {
-      background: 'bg-gradient-to-br from-green-100 via-white to-green-50',
-      header: 'bg-white',
-      footer: 'bg-gray-100',
+      background: 'bg-gradient-to-br from-blue-50 via-white to-indigo-50',
+      header: 'bg-white/95 backdrop-blur-sm border-b border-blue-200/50',
+      footer: 'bg-gray-50 border-t border-blue-200/50',
       text: 'text-gray-700',
       textPrimary: 'text-gray-900',
-      card: 'bg-white',
+      textSecondary: 'text-gray-500',
+      card: 'bg-white/95 backdrop-blur-sm border border-blue-200/50 shadow-sm',
+      accent: 'bg-gradient-to-r from-blue-500 to-indigo-600',
+      button: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700',
+      secondary: 'bg-blue-100 hover:bg-blue-200 text-blue-800',
+      success: 'bg-gradient-to-r from-blue-500 to-cyan-500',
+      warning: 'bg-gradient-to-r from-blue-400 to-indigo-500',
+      danger: 'bg-gradient-to-r from-blue-600 to-purple-600',
     }
   };
 

@@ -83,7 +83,7 @@ text-lg"
           <ul className="space-y-2 text-sm">
             <li>
               <Link
-                to="/account"
+                to="/accountmanager"
                 className="hover:text-[#0D47A1]
 transition"
               >
@@ -143,7 +143,7 @@ transition"
             </li>
             <li>
               <Link
-                to="/contato"
+                to="/contact"
                 className="hover:text-[#0D47A1]
 transition"
               >

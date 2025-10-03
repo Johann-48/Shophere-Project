@@ -3,8 +3,12 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiHeart, FiTrendingUp, FiTrendingDown } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function ProductCard({ product, isLiked, onToggleLike }) {
+  const { isDarkMode, dark, light } = useTheme();
+  const currentTheme = isDarkMode ? dark : light;
+  
   console.log("💡 ProductCard.product:", product);
   const navigate = useNavigate();
   // Extrai priceNum, oldPriceNum e trend igual ao Home
@@ -54,35 +58,39 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
   return (
     <motion.div
       onClick={() => navigate(`/produto/${product.id}`)}
-      whileHover={{ scale: 1.03 }}
-      className="bg-white rounded-2xl shadow-lg p-4 relative flex flex-col hover:ring-2 hover:ring-blue-300 transition cursor-pointer"
+      whileHover={{ scale: 1.02 }}
+      className={`${currentTheme.card} rounded-2xl p-4 relative flex flex-col hover:ring-2 hover:ring-blue-400 transition-all duration-200 cursor-pointer card-hover h-80 w-full`}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <img
-        src={
-          // 1) campo principal que sua API realmente retorna
-          product.mainImage ||
-          // 2) se houver array de miniaturas, usa a primeira
-          (Array.isArray(product.thumbnails) && product.thumbnails[0]) ||
-          // 3) se mesmo assim nada existir, placeholder
-          "/assets/placeholder.png"
-        }
-        alt={product.title || product.name}
-        className="w-full h-32 object-contain mb-3"
-      />
-      <h3 className="text-lg font-semibold mb-1">
-        {product.title || product.name}
-      </h3>
+      <div className="flex-shrink-0 mb-3">
+        <img
+          src={
+            // 1) campo principal que sua API realmente retorna
+            product.mainImage ||
+            // 2) se houver array de miniaturas, usa a primeira
+            (Array.isArray(product.thumbnails) && product.thumbnails[0]) ||
+            // 3) se mesmo assim nada existir, placeholder
+            "/assets/placeholder.png"
+          }
+          alt={product.title || product.name}
+          className="w-full h-32 object-contain"
+        />
+      </div>
+      <div className="flex-grow flex flex-col">
+        <h3 className={`text-lg font-semibold mb-2 ${currentTheme.textPrimary} line-clamp-2`}>
+          {product.title || product.name}
+        </h3>
 
-      {product.comercio && (
-        <p className="text-xs text-gray-500 mb-2">
-          Loja: <span className="font-medium">{product.comercio.nome}</span>
-        </p>
-      )}
+        {product.comercio && (
+          <p className={`text-xs ${currentTheme.textSecondary} mb-2`}>
+            Loja: <span className="font-medium">{product.comercio.nome}</span>
+          </p>
+        )}
 
-      {product.description && (
-        <p className="text-sm text-gray-500 mb-1">{product.description}</p>
-      )}
+        {product.description && (
+          <p className={`text-sm ${currentTheme.textSecondary} mb-3 line-clamp-2 flex-grow`}>{product.description}</p>
+        )}
+      </div>
 
       <div className="flex items-center gap-2 mb-2">
         {priceNum != null && (
@@ -91,12 +99,12 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
           </span>
         )}
         {oldPriceNum != null && (
-          <span className="text-xs line-through text-gray-400">
+          <span className={`text-xs line-through ${currentTheme.textSecondary}`}>
             R$ {oldPriceNum.toFixed(2)}
           </span>
         )}
-        {priceTrend === "up" && <FiTrendingUp className="text-orange-500" />}
-        {priceTrend === "down" && <FiTrendingDown className="text-green-500" />}
+        {priceTrend === "up" && <FiTrendingUp className="text-blue-400" />}
+        {priceTrend === "down" && <FiTrendingDown className="text-blue-600" />}
       </div>
 
       <div className="mt-auto flex justify-between items-center">
@@ -106,12 +114,12 @@ export default function ProductCard({ product, isLiked, onToggleLike }) {
           <Link
             to={`/contact?lojaId=${lojaId}&message=${presetMsg}`}
             onClick={(e) => e.stopPropagation()}
-            className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition text-sm"
+            className={`${currentTheme.button} text-white px-4 py-1 rounded-lg transition-all duration-200 text-sm btn-primary focus-ring`}
           >
             Conversar com Vendedor
           </Link>
         ) : (
-          <span className="text-gray-400 text-sm">Loja indisponível</span>
+          <span className={`${currentTheme.textSecondary} text-sm`}>Loja indisponível</span>
         )}
       </div>
     </motion.div>

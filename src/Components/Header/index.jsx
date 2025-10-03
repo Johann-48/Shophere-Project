@@ -10,7 +10,10 @@ export default function Header() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState(null);
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, dark, light } = useTheme();
+
+  // Get current theme
+  const currentTheme = isDarkMode ? dark : light;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -62,36 +65,34 @@ export default function Header() {
     ? [...defaultLinks, ...authLinks]
     : [...defaultLinks, ...guestLinks];
 
-  // Define as cores baseadas no tema
-  const headerBg = isDarkMode ? 'bg-black shadow-md' : 'bg-white shadow-lg';
-  const logoColor = isDarkMode ? 'text-white' : 'text-gray-900';
-  const linkColor = isDarkMode ? 'text-gray-300' : 'text-gray-600';
-  const iconColor = isDarkMode ? 'text-white' : 'text-gray-700';
-
   return (
-    <header className={`w-full ${headerBg}`}>
-      <div className="max-w-6xl mx-auto flex items-center justify-between py-4 px-6">
+    <header className={`w-full ${currentTheme.header} glass sticky top-0 z-50`}>
+      <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-4 md:px-6">
         {/* Logo */}
-        <div className="text-3xl font-extrabold tracking-wide">
-          <Link to="/">
-            <span className={logoColor}>SHOP</span>
-            <span className="text-[#0D47A1]">HERE</span>
+        <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">S</span>
+            </div>
+            <span className="text-xl md:text-2xl font-bold gradient-text">
+              SHOPHERE
+            </span>
           </Link>
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex space-x-6 items-center">
+        <nav className="hidden md:flex items-center space-x-1">
           {navLinks.map((link, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               {link.action ? (
                 <button
                   onClick={link.action}
-                  className={`${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
-                    link.underline ? "underline font-semibold" : ""
+                  className={`px-3 py-2 rounded-lg text-sm font-medium ${currentTheme.text} hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-200 focus-ring ${
+                    link.underline ? "bg-blue-500/20 text-blue-400" : ""
                   }`}
                 >
                   {link.label}
@@ -99,8 +100,8 @@ export default function Header() {
               ) : (
                 <Link
                   to={link.to}
-                  className={`${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
-                    link.underline ? "underline font-semibold" : ""
+                  className={`px-3 py-2 rounded-lg text-sm font-medium ${currentTheme.text} hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-200 focus-ring ${
+                    link.underline ? "bg-blue-500/20 text-blue-400" : ""
                   }`}
                 >
                   {link.label}
@@ -110,25 +111,19 @@ export default function Header() {
           ))}
           
           {/* Theme Toggle */}
-          <ThemeToggle />
+          <div className="ml-4 pl-4 border-l border-current border-opacity-20">
+            <ThemeToggle />
+          </div>
         </nav>
 
-        {/* Search */}
-        <div className="relative hidden md:block w-64">
-          {/*<input
-            type="text"
-            placeholder="O que está procurando?"
-                        className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow"
-          />
-          <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#0D47A1] cursor-pointer" />
-          */}
-        </div>
-
         {/* Mobile menu button */}
-        <div className="md:hidden flex items-center space-x-3">
+        <div className="md:hidden flex items-center space-x-2">
           <ThemeToggle />
-          <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <FiX size={24} className={iconColor} /> : <FiMenu size={24} className={iconColor} />}
+          <button 
+            onClick={() => setIsOpen(!isOpen)} 
+            className={`p-2 rounded-lg ${currentTheme.text} hover:bg-blue-500/10 focus-ring transition-colors`}
+          >
+            {isOpen ? <FiX size={20} /> : <FiMenu size={20} />}
           </button>
         </div>
       </div>
@@ -137,10 +132,11 @@ export default function Header() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className={`md:hidden ${isDarkMode ? 'bg-black border-gray-700' : 'bg-white border-gray-200'} border-t px-6 py-4 space-y-3`}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            className={`md:hidden ${currentTheme.card} border-t mx-4 mb-4 rounded-lg p-4 space-y-2`}
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
           >
             {navLinks.map((link, idx) => (
               <div key={idx}>
@@ -150,8 +146,8 @@ export default function Header() {
                       link.action();
                       setIsOpen(false);
                     }}
-                    className={`block w-full text-left ${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
-                      link.underline ? "underline font-semibold" : ""
+                    className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${currentTheme.text} hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-200 focus-ring ${
+                      link.underline ? "bg-blue-500/20 text-blue-400" : ""
                     }`}
                   >
                     {link.label}
@@ -160,8 +156,8 @@ export default function Header() {
                   <Link
                     to={link.to}
                     onClick={() => setIsOpen(false)}
-                    className={`block ${linkColor} hover:text-[#0D47A1] transition-all duration-200 ${
-                      link.underline ? "underline font-semibold" : ""
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium ${currentTheme.text} hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-200 focus-ring ${
+                      link.underline ? "bg-blue-500/20 text-blue-400" : ""
                     }`}
                   >
                     {link.label}
@@ -169,15 +165,6 @@ export default function Header() {
                 )}
               </div>
             ))}
-            {/* Search mobile */}
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="w-full mt-2 border border-gray-600 rounded-full py-2 pl-4 pr-10 bg-gray-800 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0D47A1]"
-              />
-              <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#0D47A1] cursor-pointer" />
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
